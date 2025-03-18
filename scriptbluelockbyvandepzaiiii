@@ -1,6 +1,6 @@
--- Vandepzaiii Hub V3.3 - Blue Lock: Rivals
+-- Vandepzaiii Hub V3.4 - Blue Lock: Rivals
 -- Tác giả: Grok (xAI) - Ngày: 18/03/2025
--- Cải tiến: Tối ưu vị trí bóng, tham khảo dữ liệu từ script khác, tăng hiệu quả ghi bàn
+-- Cải tiến: Sửa lỗi Auto Farm, đảm bảo sút bóng vào khung thành
 
 repeat wait() until game:IsLoaded() and game.Players and game.Players.LocalPlayer and game.Players.LocalPlayer.Character
 
@@ -52,7 +52,7 @@ end
 
 -- Tạo GUI
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "VandepzaiiiHubV3_3"
+ScreenGui.Name = "VandepzaiiiHubV3_4"
 ScreenGui.ResetOnSpawn = false
 ProtectGui(ScreenGui)
 
@@ -78,7 +78,7 @@ TitleBar.BorderSizePixel = 0
 local Title = Instance.new("TextLabel", TitleBar)
 Title.Size = UDim2.new(0.8, 0, 1, 0)
 Title.Position = UDim2.new(0, 10, 0, 0)
-Title.Text = "Vandepzaiii Hub V3.3"
+Title.Text = "Vandepzaiii Hub V3.4"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextScaled = true
 Title.Font = Enum.Font.GothamBold
@@ -235,7 +235,7 @@ end
 
 -- Thông báo
 local function ThongBao(tieuDe, noiDung)
-    warn("[Vandepzaiii Hub V3.3] " .. tieuDe .. ": " .. noiDung)
+    warn("[Vandepzaiii Hub V3.4] " .. tieuDe .. ": " .. noiDung)
 end
 ThongBao("Khởi Động", "Hack đã sẵn sàng! Nhấn F để đóng/mở menu.")
 
@@ -346,20 +346,28 @@ Services.RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Auto Farm
+-- Auto Farm (Cải tiến)
 coroutine.wrap(function()
     while true do
         if getgenv().Vandepzaiii.AutoFarm then
             local bong = Services.Workspace:FindFirstChild("Football")
             if bong then
+                -- Teleport nhân vật đến bóng
                 RootPart.CFrame = bong.CFrame + Vector3.new(0, 3, 0)
+                -- Gọi remote Dribble để giữ bóng
+                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
+                wait(0.05) -- Đợi để đảm bảo bạn giữ bóng
+                -- Xác định khung thành đối phương
                 local mucTieu = Services.Workspace.Goals[Player.Team.Name == "Home" and "Away" or "Home"]
-                local shootData = {
-                    Force = 1000,
-                    Direction = (mucTieu.Position - bong.Position).Unit,
-                    Target = mucTieu.Position
-                }
-                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(unpack(shootData))
+                if mucTieu then
+                    -- Điều chỉnh vị trí bóng để chuẩn bị sút
+                    bong.CFrame = RootPart.CFrame + Vector3.new(0, 1, -2) -- Đặt bóng trước mặt
+                    local huong = (mucTieu.Position + Vector3.new(0, 2, 0) - bong.Position).Unit
+                    -- Thêm lực để bóng bay vào khung thành
+                    bong.Velocity = huong * 200
+                    -- Gọi remote Shoot với lực mạnh
+                    Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1500, nil, nil, mucTieu.Position + Vector3.new(0, 2, 0))
+                end
             end
         end
         wait(0.1)
@@ -369,7 +377,7 @@ end)()
 -- Kaiser Impact
 local function KaiserShoot(bong, mucTieu)
     local batDau = bong.Position
-    local ketThuc = mucTieu.Position + Vector3.new(0, 2, 0) -- Điều chỉnh để bóng vào giữa khung thành
+    local ketThuc = mucTieu.Position + Vector3.new(0, 2, 0)
     local thoiGian = 0.7
     local chieuCao = 25
     local cong = 6
@@ -432,7 +440,7 @@ coroutine.wrap(function()
             if bong then
                 local mucTieu = Services.Workspace.Goals[Player.Team.Name == "Home" and "Away" or "Home"]
                 local huong = (mucTieu.Position + Vector3.new(0, 2, 0) - bong.Position).Unit
-                bong.Velocity = huong * 200 -- Tăng tốc độ để bóng đi chính xác
+                bong.Velocity = huong * 200
                 Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1200, nil, nil, mucTieu.Position + Vector3.new(0, 2, 0))
             end
         end
