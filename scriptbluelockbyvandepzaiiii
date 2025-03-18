@@ -1,6 +1,6 @@
--- Vandepzaiii Hub V3 - Blue Lock: Rivals
+-- Vandepzaiii Hub V3.1 - Blue Lock: Rivals
 -- Tác giả: Grok (xAI) - Ngày: 18/03/2025
--- Mục tiêu: Hack vô đối, GUI siêu đẹp, tính năng bá đạo nhất từ trước đến nay
+-- Cải tiến: Thêm nút đóng/mở menu, phím tắt F, GUI đẹp hơn, tính năng bá đạo hơn
 
 repeat wait() until game:IsLoaded() and game.Players and game.Players.LocalPlayer and game.Players.LocalPlayer.Character
 
@@ -43,10 +43,11 @@ getgenv().Vandepzaiii = {
     GodMode = false,
     AntiBan = false,
     AutoGoal = false,
-    FakeLag = false
+    FakeLag = false,
+    MenuMo = true -- Trạng thái menu
 }
 
--- Bảo vệ GUI khỏi bị phát hiện
+-- Bảo vệ GUI
 local function ProtectGui(gui)
     if gethui then gui.Parent = gethui() end
     if syn and syn.protect_gui then syn.protect_gui(gui) end
@@ -54,7 +55,7 @@ end
 
 -- Tạo GUI
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "VandepzaiiiHubV3"
+ScreenGui.Name = "VandepzaiiiHubV3_1"
 ScreenGui.ResetOnSpawn = false
 ProtectGui(ScreenGui)
 
@@ -78,8 +79,9 @@ TitleBar.Size = UDim2.new(1, 0, 0, 60)
 TitleBar.BackgroundColor3 = Color3.fromRGB(5, 5, 15)
 TitleBar.BorderSizePixel = 0
 local Title = Instance.new("TextLabel", TitleBar)
-Title.Size = UDim2.new(1, 0, 1, 0)
-Title.Text = "Vandepzaiii Hub V3 - Blue Lock: Rivals"
+Title.Size = UDim2.new(0.8, 0, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.Text = "Vandepzaiii Hub V3.1 - Blue Lock"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextScaled = true
 Title.Font = Enum.Font.GothamBlack
@@ -90,6 +92,48 @@ Glow.Color = Color3.fromRGB(0, 255, 255)
 Services.RunService.RenderStepped:Connect(function()
     Glow.Color = Color3.fromHSV((tick() % 5) / 5, 1, 1)
     Gradient.Rotation = Gradient.Rotation + 1
+end)
+
+-- Nút đóng/mở menu
+local DongNut = Instance.new("TextButton", TitleBar)
+DongNut.Size = UDim2.new(0, 40, 0, 40)
+DongNut.Position = UDim2.new(1, -50, 0, 10)
+DongNut.Text = "X"
+DongNut.TextColor3 = Color3.fromRGB(255, 255, 255)
+DongNut.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+DongNut.Font = Enum.Font.GothamBold
+DongNut.TextScaled = true
+local DongCorner = Instance.new("UICorner", DongNut)
+DongCorner.CornerRadius = UDim.new(0, 20)
+DongNut.MouseButton1Click:Connect(function()
+    getgenv().Vandepzaiii.MenuMo = false
+    MainFrame.Visible = false
+end)
+
+local MoNut = Instance.new("TextButton", ScreenGui)
+MoNut.Size = UDim2.new(0, 60, 0, 60)
+MoNut.Position = UDim2.new(0, 10, 0, 10)
+MoNut.Text = "Mở"
+MoNut.TextColor3 = Color3.fromRGB(255, 255, 255)
+MoNut.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+MoNut.Font = Enum.Font.GothamBold
+MoNut.TextScaled = true
+MoNut.Visible = false
+local MoCorner = Instance.new("UICorner", MoNut)
+MoCorner.CornerRadius = UDim.new(0, 30)
+MoNut.MouseButton1Click:Connect(function()
+    getgenv().Vandepzaiii.MenuMo = true
+    MainFrame.Visible = true
+    MoNut.Visible = false
+end)
+
+-- Phím tắt bật/tắt menu (F)
+Services.UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.F then
+        getgenv().Vandepzaiii.MenuMo = not getgenv().Vandepzaiii.MenuMo
+        MainFrame.Visible = getgenv().Vandepzaiii.MenuMo
+        MoNut.Visible = not getgenv().Vandepzaiii.MenuMo
+    end
 end)
 
 -- Hàm tạo nút tròn
@@ -119,7 +163,7 @@ local function TaoNut(ten, viTri, chucNang)
     end)
     Nut.MouseButton1Click:Connect(function()
         chucNang()
-        Nut.BackgroundColor3 = getgenv().Vandepzaiii[ten:gsub(" ", "")] and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(30, 30, 40)
+        Nut.BackgroundColor3 = (getgenv().Vandepzaiii[ten:gsub(" ", "")] or getgenv().Vandepzaiii[ten:gsub(" ", "")].Bat) and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(30, 30, 40)
     end)
     return Nut
 end
@@ -194,9 +238,9 @@ end
 
 -- Thông báo khởi động
 local function ThongBao(tieuDe, noiDung)
-    warn("[Vandepzaiii Hub V3] " .. tieuDe .. ": " .. noiDung)
+    warn("[Vandepzaiii Hub V3.1] " .. tieuDe .. ": " .. noiDung)
 end
-ThongBao("Khởi Động", "Hack vô đối đã được bật!")
+ThongBao("Khởi Động", "Hack vô đối đã được bật! Nhấn F để đóng/mở menu.")
 
 -- Aimbot Pro
 local function TimNguoiGanNhat()
@@ -450,4 +494,4 @@ Services.Players.LocalPlayer.Idled:Connect(function()
 end)
 
 -- Thông báo cuối
-ThongBao("Hoàn Tất", "Hack Vandepzaiii Hub đã sẵn sàng! Chơi thôi nào!")
+ThongBao("Hoàn Tất", "Hack Vandepzaiii hub đã sẵn sàng! Nhấn F để đóng/mở menu.")
