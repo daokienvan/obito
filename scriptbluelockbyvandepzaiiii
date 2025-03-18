@@ -1,0 +1,219 @@
+-- Script Blue Lock: Rivals - Menu Tổng Hợp
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- Biến trạng thái
+local speedEnabled = false
+local staminaEnabled = false
+local grabEnabled = false
+local teamEnabled = false
+local goalEnabled = false
+
+-- Tăng tốc độ chạy
+local function toggleSpeed()
+    speedEnabled = not speedEnabled
+    local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = speedEnabled and 32 or 16
+        print(speedEnabled and "Tốc độ chạy đã được tăng!" or "Tốc độ chạy đã trở về bình thường!")
+    end
+end
+
+-- Stamina vô hạn
+local function toggleStamina()
+    staminaEnabled = not staminaEnabled
+    if staminaEnabled then
+        RunService.Heartbeat:Connect(function()
+            if staminaEnabled then
+                local args = { [1] = 0/0 }
+                pcall(function()
+                    ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services")
+                        :WaitForChild("StaminaService"):WaitForChild("RE"):WaitForChild("DecreaseStamina")
+                        :FireServer(unpack(args))
+                end)
+            end
+        end)
+        print("Stamina vô hạn đã được kích hoạt!")
+    else
+        print("Stamina vô hạn đã bị tắt!")
+    end
+end
+
+-- Tự động nhặt bóng
+local function toggleGrabBall()
+    grabEnabled = not grabEnabled
+    if grabEnabled then
+        spawn(function()
+            while grabEnabled and task.wait(0.5) do
+                local character = LocalPlayer.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    for _, ball in pairs(workspace:GetChildren()) do
+                        if ball.Name == "Ball" and ball:IsA("BasePart") then
+                            local distance = (ball.Position - character.HumanoidRootPart.Position).Magnitude
+                            if distance < 15 then
+                                character.HumanoidRootPart.CFrame = CFrame.new(ball.Position)
+                                print("Đã nhặt bóng!")
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        print("Tự động nhặt bóng đã được kích hoạt!")
+    else
+        print("Tự động nhặt bóng đã bị tắt!")
+    end
+end
+
+-- Tự động vào team
+local function toggleTeam()
+    teamEnabled = not teamEnabled
+    if teamEnabled then
+        local teamService = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("TeamService")
+        if teamService then
+            local availableTeams = {"TeamA", "TeamB"} -- Thay bằng tên team thực tế nếu biết
+            for _, teamName in pairs(availableTeams) do
+                teamService:WaitForChild("RE"):WaitForChild("JoinTeam"):FireServer(teamName)
+                wait(1)
+                if LocalPlayer.Team ~= nil then
+                    print("Đã vào team: " .. teamName)
+                    break
+                end
+            end
+        else
+            print("Không tìm thấy TeamService!")
+        end
+    else
+        print("Tự động vào team đã bị tắt!")
+    end
+end
+
+-- Tự động ghi bàn
+local function toggleGoal()
+    goalEnabled = not goalEnabled
+    if goalEnabled then
+        spawn(function()
+            while goalEnabled and task.wait(1) do
+                local character = LocalPlayer.Character
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    for _, goal in pairs(workspace:GetChildren()) do
+                        if (goal.Name == "Goal" or goal.Name == "EnemyGoal") and goal:IsA("BasePart") then
+                            local hasBall = character:FindFirstChild("Ball") ~= nil
+                            if hasBall then
+                                character.HumanoidRootPart.CFrame = CFrame.new(goal.Position + Vector3.new(0, 0, 5))
+                                print("Đã ghi bàn (giả lập)!")
+                                pcall(function()
+                                    ReplicatedStorage:WaitForChild("KickBall"):FireServer(goal.Position)
+                                end)
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        print("Tự động ghi bàn đã được kích hoạt!")
+    else
+        print("Tự động ghi bàn đã bị tắt!")
+    end
+end
+
+-- Tạo Menu GUI
+local function createMenu()
+    local ScreenGui = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local Title = Instance.new("TextLabel")
+    local SpeedButton = Instance.new("TextButton")
+    local StaminaButton = Instance.new("TextButton")
+    local GrabButton = Instance.new("TextButton")
+    local TeamButton = Instance.new("TextButton")
+    local GoalButton = Instance.new("TextButton")
+
+    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    ScreenGui.Name = "BlueLockMenu"
+
+    Frame.Parent = ScreenGui
+    Frame.Size = UDim2.new(0, 250, 0, 300)
+    Frame.Position = UDim2.new(0.5, -125, 0.5, -150)
+    Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    Frame.BorderSizePixel = 2
+
+    Title.Parent = Frame
+    Title.Size = UDim2.new(1, 0, 0, 40)
+    Title.Position = UDim2.new(0, 0, 0, 0)
+    Title.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    Title.Text = "Blue Lock: Rivals Menu"
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 20
+    Title.Font = Enum.Font.SourceSansBold
+
+    SpeedButton.Parent = Frame
+    SpeedButton.Size = UDim2.new(0, 230, 0, 40)
+    SpeedButton.Position = UDim2.new(0, 10, 0, 50)
+    SpeedButton.Text = "Tăng Tốc Độ: OFF"
+    SpeedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    SpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SpeedButton.MouseButton1Click:Connect(function()
+        toggleSpeed()
+        SpeedButton.Text = "Tăng Tốc Độ: " .. (speedEnabled and "ON" or "OFF")
+        SpeedButton.BackgroundColor3 = speedEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    end)
+
+    StaminaButton.Parent = Frame
+    StaminaButton.Size = UDim2.new(0, 230, 0, 40)
+    StaminaButton.Position = UDim2.new(0, 10, 0, 100)
+    StaminaButton.Text = "Stamina Vô Hạn: OFF"
+    StaminaButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    StaminaButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    StaminaButton.MouseButton1Click:Connect(function()
+        toggleStamina()
+        StaminaButton.Text = "Stamina Vô Hạn: " .. (staminaEnabled and "ON" or "OFF")
+        StaminaButton.BackgroundColor3 = staminaEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    end)
+
+    GrabButton.Parent = Frame
+    GrabButton.Size = UDim2.new(0, 230, 0, 40)
+    GrabButton.Position = UDim2.new(0, 10, 0, 150)
+    GrabButton.Text = "Tự Động Nhặt Bóng: OFF"
+    GrabButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    GrabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    GrabButton.MouseButton1Click:Connect(function()
+        toggleGrabBall()
+        GrabButton.Text = "Tự Động Nhặt Bóng: " .. (grabEnabled and "ON" or "OFF")
+        GrabButton.BackgroundColor3 = grabEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    end)
+
+    TeamButton.Parent = Frame
+    TeamButton.Size = UDim2.new(0, 230, 0, 40)
+    TeamButton.Position = UDim2.new(0, 10, 0, 200)
+    TeamButton.Text = "Tự Động Vào Team: OFF"
+    TeamButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    TeamButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TeamButton.MouseButton1Click:Connect(function()
+        toggleTeam()
+        TeamButton.Text = "Tự Động Vào Team: " .. (teamEnabled and "ON" or "OFF")
+        TeamButton.BackgroundColor3 = teamEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    end)
+
+    GoalButton.Parent = Frame
+    GoalButton.Size = UDim2.new(0, 230, 0, 40)
+    GoalButton.Position = UDim2.new(0, 10, 0, 250)
+    GoalButton.Text = "Tự Động Ghi Bàn: OFF"
+    GoalButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    GoalButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    GoalButton.MouseButton1Click:Connect(function()
+        toggleGoal()
+        GoalButton.Text = "Tự Động Ghi Bàn: " .. (goalEnabled and "ON" or "OFF")
+        GoalButton.BackgroundColor3 = goalEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    end)
+end
+
+-- Khởi chạy script
+LocalPlayer.CharacterAdded:Connect(function()
+    if speedEnabled then toggleSpeed() end
+end)
+createMenu()
+print("Menu Blue Lock đã được khởi chạy!")
