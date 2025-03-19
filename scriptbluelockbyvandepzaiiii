@@ -1,647 +1,1081 @@
--- Vandepzaiii Hub V4.1 - Blue Lock: Rivals
--- Tác giả: Grok (xAI) - Ngày: 18/03/2025
--- Cải tiến: Tăng phạm vi Ball Aura lên tối đa (1000 studs) để hút bóng từ bất kỳ đâu
+-- Vandepzaiii Hub - Phiên Bản Cao Cấp Độc Quyền
+-- Được tạo bởi Văn - Vandepzaiii Hub
+-- Phiên bản: 4.2 (Cải tiến tối ưu từ bản gốc)
+-- Ngày cập nhật: 18/03/2025
 
 repeat wait() until game:IsLoaded() and game.Players and game.Players.LocalPlayer and game.Players.LocalPlayer.Character
 
--- Dịch vụ cơ bản
-local Services = {
-    Players = game:GetService("Players"),
-    RunService = game:GetService("RunService"),
-    ReplicatedStorage = game:GetService("ReplicatedStorage"),
-    Workspace = game:GetService("Workspace"),
-    TweenService = game:GetService("TweenService"),
-    CoreGui = game:GetService("CoreGui"),
-    UserInputService = game:GetService("UserInputService"),
-    VirtualInputManager = game:GetService("VirtualInputManager")
+-- Cài đặt toàn cục với các tính năng nâng cao
+getgenv().VandepzaiiiSettings = {
+    -- Tính năng cơ bản
+    TocDoDiChuyenToggle = nil,
+    TocDoDiChuyenInput = nil,
+    LucNhayToggle = nil,
+    LucNhayInput = nil,
+    VungAnhHuongToggle = nil,
+    VungAnhHuongInput = nil,
+    PhimTatVungAnhHuong = nil,
+    TuDongDribble = nil,
+    ChuyenNangCapToggle = nil,
+    PhimTatSutNhanToggle = nil,
+    CongSuatInput = nil,
+    ESPToggle = nil,
+    KieuESPToggle = nil,
+    ESPKichHoatToggle = nil,
+    ESPLuongToggle = nil,
+    ESPNangLuongToggle = nil,
+    DuDoanBongToggle = nil,
+    TuDongNongToggle = nil,
+    ChuyenTucTuongToggle = nil,
+    NangLuongVoHan = false,
+    ManHinhTrang = nil,
+    TuDongThuMon = nil,
+    PhimTatThuMon = "",
+    LuaChonViTriDoi = nil,
+    TuDongDoiHinhToggle = nil,
+    TuDongDoiHinhChoNongToggle = nil,
+    BanNganToggle = nil,
+    NhayServerToggle = nil,
+    NguongNhayServerInput = nil,
+    KaiserToggle = nil,
+    PhimTatKaiser = nil,
+    SutCongProMaxToggle = nil,
+    PhimTatSutCongProMax = nil,
+    KhongCooldownCapToggle = nil,
+    KhongCooldownDribbleKhongKhiToggle = nil,
+    KhongCooldownDichChuyenKhongKhiToggle = nil,
+    LuaChonKieuKhoaDropdown = nil,
+    TuDongQuayKieuToggle = nil,
+    LuaChonLuongKhoaDropdown = nil,
+    TuDongQuayLuongToggle = nil,
+    LuaChonHieuUngDropdown = nil,
+    LuaChonTrangPhucDropdown = nil,
+    LuaChonTheDropdown = nil,
+    ChuyenLagToggle = nil,
+
+    -- Tính năng VIP độc quyền mới
+    TuDongGhiBanToggle = nil, -- Tự động ghi bàn với thuật toán thông minh
+    BaoVeChongBanToggle = true, -- Bảo vệ chống bị cấm
+    ChuDeGiaoDien = "Vang", -- Chủ đề giao diện tùy chỉnh (Vàng sang trọng)
+    CheDoHieuSuat = false, -- Tối ưu cho thiết bị yếu
+    TuDongKetNoiLaiToggle = false, -- Tự động kết nối lại khi mất kết nối
+    MauESPVIP = Color3.fromRGB(255, 215, 0), -- Màu ESP Vàng VIP
+    TuDongComboKyNangToggle = nil, -- Tự động thực hiện combo kỹ năng
+    AmThanhThongBaoVIP = nil, -- Âm thanh thông báo tùy chỉnh
+    HieuUngGiaoDienVIP = true, -- Hiệu ứng giao diện cao cấp
+    TuDongTangQuaToggle = nil, -- Tự động tặng quà cho người chơi khác
 }
 
-local Player = Services.Players.LocalPlayer
-local Mouse = Player:GetMouse()
-local Character = Player.Character or Player.CharacterAdded:Wait()
-local Humanoid = Character:WaitForChild("Humanoid")
-local RootPart = Character:WaitForChild("HumanoidRootPart")
-local Camera = Services.Workspace.CurrentCamera
-
--- Cài đặt toàn cục
-getgenv().Vandepzaiii = {
-    Aimbot = {Bat = false, DoMuot = 0.05, TamNhin = 120},
-    BallAura = {Bat = false, TamHut = 1000}, -- Tăng phạm vi lên 1000 studs để hút bóng từ bất kỳ đâu
-    AutoSkill = false,
-    TocDo = 16,
-    NhayCao = 50,
-    StaminaVoHan = false,
-    ESP = {Bat = false},
-    AutoFarm = false,
-    AutoJoinTeam = false,
-    AutoGK = false,
-    KaiserImpact = false,
-    CurveShot = false,
-    ServerCrasher = false,
-    Hitbox = {Bat = false, KichThuoc = 8},
-    GodMode = false,
-    AntiBan = false,
-    AutoGoal = false,
-    FakeLag = false,
-    MenuMo = true
-}
-
--- Bảo vệ GUI
-local function ProtectGui(gui)
-    if gethui then gui.Parent = gethui() end
-    if syn and syn.protect_gui then syn.protect_gui(gui) end
-end
-
--- Tạo GUI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "VandepzaiiiHubV4_1"
-ScreenGui.ResetOnSpawn = false
-ProtectGui(ScreenGui)
-
-local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 300, 0, 400)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
-MainFrame.BorderSizePixel = 0
-local Gradient = Instance.new("UIGradient", MainFrame)
-Gradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(150, 0, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 150))
-}
-Gradient.Rotation = 45
-local Corner = Instance.new("UICorner", MainFrame)
-Corner.CornerRadius = UDim.new(0, 10)
-
--- Thanh tiêu đề
-local TitleBar = Instance.new("Frame", MainFrame)
-TitleBar.Size = UDim2.new(1, 0, 0, 40)
-TitleBar.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
-TitleBar.BorderSizePixel = 0
-local Title = Instance.new("TextLabel", TitleBar)
-Title.Size = UDim2.new(0.8, 0, 1, 0)
-Title.Position = UDim2.new(0, 10, 0, 0)
-Title.Text = "Vandepzaiii Hub V4.1"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextScaled = true
-Title.Font = Enum.Font.GothamBold
-Title.BackgroundTransparency = 1
-local Glow = Instance.new("UIStroke", Title)
-Glow.Thickness = 2
-Glow.Color = Color3.fromRGB(0, 255, 255)
-Services.RunService.RenderStepped:Connect(function()
-    Glow.Color = Color3.fromHSV((tick() % 5) / 5, 1, 1)
-    Gradient.Rotation = Gradient.Rotation + 0.5
-end)
-
--- Nút đóng/mở
-local DongNut = Instance.new("TextButton", TitleBar)
-DongNut.Size = UDim2.new(0, 25, 0, 25)
-DongNut.Position = UDim2.new(1, -35, 0, 7)
-DongNut.Text = "X"
-DongNut.TextColor3 = Color3.fromRGB(255, 255, 255)
-DongNut.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-DongNut.Font = Enum.Font.GothamBold
-DongNut.TextScaled = true
-local DongCorner = Instance.new("UICorner", DongNut)
-DongCorner.CornerRadius = UDim.new(0, 10)
-DongNut.MouseButton1Click:Connect(function()
-    getgenv().Vandepzaiii.MenuMo = false
-    MainFrame.Visible = false
-end)
-
-local MoNut = Instance.new("TextButton", ScreenGui)
-MoNut.Size = UDim2.new(0, 40, 0, 40)
-MoNut.Position = UDim2.new(0, 10, 0, 10)
-MoNut.Text = "Mở"
-MoNut.TextColor3 = Color3.fromRGB(255, 255, 255)
-MoNut.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
-MoNut.Font = Enum.Font.GothamBold
-MoNut.TextScaled = true
-MoNut.Visible = false
-local MoCorner = Instance.new("UICorner", MoNut)
-MoCorner.CornerRadius = UDim.new(0, 20)
-MoNut.MouseButton1Click:Connect(function()
-    getgenv().Vandepzaiii.MenuMo = true
-    MainFrame.Visible = true
-    MoNut.Visible = false
-end)
-
--- Phím tắt F
-Services.UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.F then
-        getgenv().Vandepzaiii.MenuMo = not getgenv().Vandepzaiii.MenuMo
-        MainFrame.Visible = getgenv().Vandepzaiii.MenuMo
-        MoNut.Visible = not getgenv().Vandepzaiii.MenuMo
-    end
-end)
-
--- Hàm tạo nút
-local function TaoNut(ten, viTri, chucNang)
-    local Nut = Instance.new("TextButton", MainFrame)
-    Nut.Size = UDim2.new(0, 55, 0, 55)
-    Nut.Position = viTri
-    Nut.Text = ten
-    Nut.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Nut.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    Nut.BorderSizePixel = 0
-    Nut.Font = Enum.Font.Gotham
-    Nut.TextScaled = true
-    local Corner = Instance.new("UICorner", Nut)
-    Corner.CornerRadius = UDim.new(0, 25)
-    local Glow = Instance.new("UIStroke", Nut)
-    Glow.Thickness = 0
-    Glow.Color = Color3.fromRGB(0, 255, 0)
-
-    Nut.MouseEnter:Connect(function()
-        Services.TweenService:Create(Glow, TweenInfo.new(0.3), {Thickness = 2}):Play()
-        Services.TweenService:Create(Nut, TweenInfo.new(0.3), {Size = UDim2.new(0, 60, 0, 60)}):Play()
-    end)
-    Nut.MouseLeave:Connect(function()
-        Services.TweenService:Create(Glow, TweenInfo.new(0.3), {Thickness = 0}):Play()
-        Services.TweenService:Create(Nut, TweenInfo.new(0.3), {Size = UDim2.new(0, 55, 0, 55)}):Play()
-    end)
-    Nut.MouseButton1Click:Connect(function()
-        local trangThai = getgenv().Vandepzaiii[ten:gsub(" ", "")] or getgenv().Vandepzaiii[ten:gsub(" ", "")].Bat
-        chucNang()
-        trangThai = not trangThai
-        Nut.BackgroundColor3 = trangThai and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(25, 25, 35)
-    end)
-    return Nut
-end
-
--- Danh sách nút
-local DanhSachNut = {
-    {"Aimbot", UDim2.new(0, 10, 0, 50), function() 
-        getgenv().Vandepzaiii.Aimbot.Bat = not getgenv().Vandepzaiii.Aimbot.Bat 
-        warn("Aimbot: " .. (getgenv().Vandepzaiii.Aimbot.Bat and "BẬT" or "TẮT"))
-    end},
-    {"Ball Aura", UDim2.new(0, 70, 0, 50), function() 
-        getgenv().Vandepzaiii.BallAura.Bat = not getgenv().Vandepzaiii.BallAura.Bat 
-        warn("Hút Bóng: " .. (getgenv().Vandepzaiii.BallAura.Bat and "BẬT" or "TẮT"))
-    end},
-    {"Auto Skill", UDim2.new(0, 130, 0, 50), function() 
-        getgenv().Vandepzaiii.AutoSkill = not getgenv().Vandepzaiii.AutoSkill 
-        warn("Tự Động Kỹ Năng: " .. (getgenv().Vandepzaiii.AutoSkill and "BẬT" or "TẮT"))
-    end},
-    {"Tốc Độ", UDim2.new(0, 190, 0, 50), function() 
-        getgenv().Vandepzaiii.TocDo = 64 
-        warn("Tốc Độ: x4")
-    end},
-    {"Stamina VH", UDim2.new(0, 250, 0, 50), function() 
-        getgenv().Vandepzaiii.StaminaVoHan = not getgenv().Vandepzaiii.StaminaVoHan 
-        warn("Stamina Vô Hạn: " .. (getgenv().Vandepzaiii.StaminaVoHan and "BẬT" or "TẮT"))
-    end},
-    {"ESP", UDim2.new(0, 10, 0, 120), function() 
-        getgenv().Vandepzaiii.ESP.Bat = not getgenv().Vandepzaiii.ESP.Bat 
-        warn("ESP: " .. (getgenv().Vandepzaiii.ESP.Bat and "BẬT" or "TẮT"))
-    end},
-    {"Auto Farm", UDim2.new(0, 70, 0, 120), function() 
-        getgenv().Vandepzaiii.AutoFarm = not getgenv().Vandepzaiii.AutoFarm 
-        warn("Tự Động Farm: " .. (getgenv().Vandepzaiii.AutoFarm and "BẬT" or "TẮT"))
-    end},
-    {"Auto Join", UDim2.new(0, 130, 0, 120), function() 
-        getgenv().Vandepzaiii.AutoJoinTeam = not getgenv().Vandepzaiii.AutoJoinTeam 
-        warn("Tự Động Join Team: " .. (getgenv().Vandepzaiii.AutoJoinTeam and "BẬT" or "TẮT"))
-    end},
-    {"Auto GK", UDim2.new(0, 190, 0, 120), function() 
-        getgenv().Vandepzaiii.AutoGK = not getgenv().Vandepzaiii.AutoGK 
-        warn("Tự Động GK: " .. (getgenv().Vandepzaiii.AutoGK and "BẬT" or "TẮT"))
-    end},
-    {"Kaiser I.", UDim2.new(0, 250, 0, 120), function() 
-        getgenv().Vandepzaiii.KaiserImpact = not getgenv().Vandepzaiii.KaiserImpact 
-        warn("Kaiser Impact: " .. (getgenv().Vandepzaiii.KaiserImpact and "BẬT" or "TẮT"))
-    end},
-    {"Curve S.", UDim2.new(0, 10, 0, 190), function() 
-        getgenv().Vandepzaiii.CurveShot = not getgenv().Vandepzaiii.CurveShot 
-        warn("Cú Sút Cong: " .. (getgenv().Vandepzaiii.CurveShot and "BẬT" or "TẮT"))
-    end},
-    {"Server C.", UDim2.new(0, 70, 0, 190), function() 
-        getgenv().Vandepzaiii.ServerCrasher = not getgenv().Vandepzaiii.ServerCrasher 
-        warn("Phá Server: " .. (getgenv().Vandepzaiii.ServerCrasher and "BẬT" or "TẮT"))
-    end},
-    {"Hitbox", UDim2.new(0, 130, 0, 190), function() 
-        getgenv().Vandepzaiii.Hitbox.Bat = not getgenv().Vandepzaiii.Hitbox.Bat 
-        warn("Hitbox: " .. (getgenv().Vandepzaiii.Hitbox.Bat and "BẬT" or "TẮT"))
-    end},
-    {"God Mode", UDim2.new(0, 190, 0, 190), function() 
-        getgenv().Vandepzaiii.GodMode = not getgenv().Vandepzaiii.GodMode 
-        warn("Bất Tử: " .. (getgenv().Vandepzaiii.GodMode and "BẬT" or "TẮT"))
-    end},
-    {"Anti Ban", UDim2.new(0, 250, 0, 190), function() 
-        getgenv().Vandepzaiii.AntiBan = not getgenv().Vandepzaiii.AntiBan 
-        warn("Chống Ban: " .. (getgenv().Vandepzaiii.AntiBan and "BẬT" or "TẮT"))
-    end},
-    {"Auto Goal", UDim2.new(0, 10, 0, 260), function() 
-        getgenv().Vandepzaiii.AutoGoal = not getgenv().Vandepzaiii.AutoGoal 
-        warn("Tự Động Ghi Bàn: " .. (getgenv().Vandepzaiii.AutoGoal and "BẬT" or "TẮT"))
-    end},
-    {"Fake Lag", UDim2.new(0, 70, 0, 260), function() 
-        getgenv().Vandepzaiii.FakeLag = not getgenv().Vandepzaiii.FakeLag 
-        warn("Giả Lập Lag: " .. (getgenv().Vandepzaiii.FakeLag and "BẬT" or "TẮT"))
-    end}
-}
-
-for _, nut in pairs(DanhSachNut) do
-    TaoNut(nut[1], nut[2], nut[3])
-end
-
--- Thông báo
-local function ThongBao(tieuDe, noiDung)
-    warn("[Vandepzaiii Hub V4.1] " .. tieuDe .. ": " .. noiDung)
-end
-ThongBao("Khởi Động", "Hack đã sẵn sàng! Nhấn F để đóng/mở menu.")
-
--- Aimbot
-local function TimNguoiGanNhat()
-    local ganNhat, khoangCach = nil, math.huge
-    for _, nguoi in pairs(Services.Players:GetPlayers()) do
-        if nguoi ~= Player and nguoi.Character and nguoi.Character:FindFirstChild("HumanoidRootPart") then
-            local kc = (RootPart.Position - nguoi.Character.HumanoidRootPart.Position).Magnitude
-            if kc < khoangCach and kc <= getgenv().Vandepzaiii.Aimbot.TamNhin then
-                khoangCach = kc
-                ganNhat = nguoi
-            end
-        end
-    end
-    return ganNhat
-end
-
-Services.RunService.RenderStepped:Connect(function()
-    if getgenv().Vandepzaiii.Aimbot.Bat then
-        local mucTieu = TimNguoiGanNhat()
-        if mucTieu then
-            local viTriMucTieu = mucTieu.Character.HumanoidRootPart.Position
-            local viTriCam = Camera.CFrame.Position
-            local cfMoi = CFrame.new(viTriCam, viTriMucTieu)
-            Camera.CFrame = Camera.CFrame:Lerp(cfMoi, getgenv().Vandepzaiii.Aimbot.DoMuot)
-        end
-    end
-end)
-
--- Ball Aura (Tăng phạm vi tối đa)
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.BallAura.Bat then
-            local bong = Services.Workspace:FindFirstChild("Football")
-            if bong and bong:IsA("BasePart") then
-                local kc = (RootPart.Position - bong.Position).Magnitude
-                if kc <= getgenv().Vandepzaiii.BallAura.TamHut then
-                    bong.CFrame = RootPart.CFrame * CFrame.new(0, 0, -2) -- Đưa bóng sát chân
-                    pcall(function()
-                        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
-                        ThongBao("Ball Aura", "Đã hút bóng, kc: " .. kc)
-                    end)
-                else
-                    -- Di chuyển nhân vật đến bóng nếu quá xa
-                    RootPart.CFrame = bong.CFrame + Vector3.new(0, 3, 0)
-                    wait(0.1)
-                    bong.CFrame = RootPart.CFrame * CFrame.new(0, 0, -2)
-                    pcall(function()
-                        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
-                        ThongBao("Ball Aura", "Đã di chuyển đến bóng, kc: " .. kc)
-                    end)
-                end
-            end
-        end
-        wait(0.01)
-    end
-end)()
-
--- Auto Skill
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.AutoSkill then
-            local bong = Services.Workspace:FindFirstChild("Football")
-            if bong then
-                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
-                wait(0.03)
-                local mucTieu = Services.Workspace.Goals[Player.Team.Name == "Home" and "Away" or "Home"]
-                if mucTieu then
-                    Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1500, (mucTieu.Position - bong.Position).Unit, bong, mucTieu.Position)
-                end
-                wait(0.03)
-                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Slide:FireServer()
-            end
-        end
-        wait(0.1)
-    end
-end)()
-
--- Tốc Độ & Nhảy Cao
-Services.RunService.Stepped:Connect(function()
-    if Character and Character:FindFirstChild("Humanoid") then
-        Humanoid.WalkSpeed = getgenv().Vandepzaiii.TocDo
-        Humanoid.JumpPower = getgenv().Vandepzaiii.NhayCao
-    end
-end)
-
--- Stamina Vô Hạn
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.StaminaVoHan then
-            local stats = Player:FindFirstChild("PlayerStats")
-            if stats and stats:FindFirstChild("Stamina") then
-                stats.Stamina.Value = math.huge
-            end
-        end
-        wait(0.02)
-    end
-end)()
-
--- ESP
-local ESPInstances = {}
-local function ThemESP(nguoi)
-    if nguoi ~= Player and nguoi.Character then
-        if not ESPInstances[nguoi.Name] then
-            local Billboard = Instance.new("BillboardGui", nguoi.Character:WaitForChild("Head"))
-            Billboard.Size = UDim2.new(0, 100, 0, 50)
-            Billboard.StudsOffset = Vector3.new(0, 3, 0)
-            local Ten = Instance.new("TextLabel", Billboard)
-            Ten.Size = UDim2.new(1, 0, 1, 0)
-            Ten.Text = nguoi.Name .. "\n" .. (nguoi.Team and nguoi.Team.Name or "Không Team")
-            Ten.TextColor3 = Color3.fromRGB(255, 0, 0)
-            Ten.BackgroundTransparency = 1
-            Ten.TextScaled = true
-            local Vien = Instance.new("UIStroke", Ten)
-            Vien.Color = Color3.fromRGB(255, 255, 0)
-            Vien.Thickness = 1
-            ESPInstances[nguoi.Name] = Billboard
-        end
-    end
-end
-
-Services.RunService.RenderStepped:Connect(function()
-    if getgenv().Vandepzaiii.ESP.Bat then
-        for _, nguoi in pairs(Services.Players:GetPlayers()) do
-            if nguoi.Character then ThemESP(nguoi) end
-        end
-    else
-        for _, esp in pairs(ESPInstances) do
-            esp:Destroy()
-        end
-        ESPInstances = {}
-    end
-end)
-
--- Auto Join Team
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.AutoJoinTeam then
-            local lobby = Services.ReplicatedStorage:FindFirstChild("LobbyService")
-            if lobby and lobby:FindFirstChild("RE") then
-                pcall(function()
-                    lobby.RE.JoinTeam:FireServer("Home")
-                    wait(0.5)
-                    if not Player.Team or Player.Team.Name ~= "Home" then
-                        lobby.RE.JoinTeam:FireServer("Away")
-                    end
-                    wait(0.5)
-                    local gameService = Services.ReplicatedStorage:FindFirstChild("GameService")
-                    if gameService and gameService:FindFirstChild("RE") then
-                        gameService.RE.StartGame:FireServer()
-                    end
-                    ThongBao("Auto Join", "Đã thử join team: " .. (Player.Team and Player.Team.Name or "Chưa join"))
-                end)
-            end
+-- Phát hiện thiết bị và tối ưu giao diện
+local KichThuocGiaoDien
+function KiemTraThietBi()
+    local player = game.Players.LocalPlayer
+    if player then
+        local UserInputService = game:GetService("UserInputService")
+        if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
+            KichThuocGiaoDien = UDim2.fromOffset(480, 360) -- Giao diện cho thiết bị di động
         else
-            wait(1)
+            KichThuocGiaoDien = UDim2.fromOffset(720, 600) -- Giao diện lớn hơn cho máy tính
         end
-        wait(2)
     end
-end)()
+end
+KiemTraThietBi()
 
--- Auto Farm
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.AutoFarm then
-            local bong = Services.Workspace:FindFirstChild("Football")
-            if bong and Player.Team then
-                local kc = (RootPart.Position - bong.Position).Magnitude
-                if kc > 5 then
-                    RootPart.CFrame = bong.CFrame + Vector3.new(0, 3, 0)
-                    wait(0.1)
-                end
-                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
-                wait(0.05)
-                local mucTieu = Services.Workspace.Goals:FindFirstChild(Player.Team.Name == "Home" and "Away" or "Home")
-                if mucTieu then
-                    local huong = (mucTieu.Position - bong.Position).Unit
-                    bong.Velocity = huong * 500
-                    local shootData = {
-                        Power = 3500,
-                        Direction = huong,
-                        BallId = bong,
-                        TargetPosition = mucTieu.Position + Vector3.new(0, 2, 0)
-                    }
-                    pcall(function()
-                        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(shootData.Power, shootData.Direction, shootData.BallId, shootData.TargetPosition)
-                        ThongBao("Auto Farm", "Đã sút với Power: " .. shootData.Power .. ", Target: " .. tostring(mucTieu.Position))
-                        Humanoid:LoadAnimation(game.ReplicatedStorage.Animations.ShootAnimation):Play()
-                    end)
-                end
+-- Lưu trữ cài đặt với cấu trúc cải tiến
+local TenTep = tostring(game.Players.LocalPlayer.UserId) .. "_CaiDatVandepzaiii.json"
+local ThuMucChinh = "VandepzaiiiHub"
+local ThuMucPhu = "BlueLockRivals"
+
+function LuuCaiDat()
+    local json
+    local HttpService = game:GetService("HttpService")
+    if writefile then
+        json = HttpService:JSONEncode(getgenv().VandepzaiiiSettings)
+        if not isfolder(ThuMucChinh) then
+            makefolder(ThuMucChinh)
+        end
+        if not isfolder(ThuMucChinh .. "/" .. ThuMucPhu) then
+            makefolder(ThuMucChinh .. "/" .. ThuMucPhu)
+        end
+        writefile(ThuMucChinh .. "/" .. ThuMucPhu .. "/" .. TenTep, json)
+    else
+        error("LỖI: Không thể lưu cài đặt của bạn!")
+    end
+end
+
+function TaiCaiDat()
+    local HttpService = game:GetService("HttpService")
+    if readfile and isfile and isfile(ThuMucChinh .. "/" .. ThuMucPhu .. "/" .. TenTep) then
+        getgenv().VandepzaiiiSettings = HttpService:JSONDecode(readfile(ThuMucChinh .. "/" .. ThuMucPhu .. "/" .. TenTep))
+    end
+end
+
+TaiCaiDat()
+
+-- Tải thư viện giao diện với cải tiến
+local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/imyourlio/Cracked/refs/heads/main/Fearise%20UI"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+-- Tạo cửa sổ giao diện cao cấp
+local CuaSo = Fluent:CreateWindow({
+    Title = "Vandepzaiii Hub Cao Cấp" .. " | " .. "Blue Lock: Rivals" .. " | " .. "[Phiên bản 4.2]",
+    SubTitle = "Được tạo bởi Văn - Trải nghiệm VIP đỉnh cao",
+    TabWidth = 200,
+    Size = KichThuocGiaoDien,
+    Acrylic = true, -- Hiệu ứng mờ cao cấp
+    Theme = getgenv().VandepzaiiiSettings.ChuDeGiaoDien,
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+-- Định nghĩa các tab với giao diện Việt hóa
+local Tabs = {
+    TrangChinh = CuaSo:AddTab({ Title = "Chính", Icon = "align-justify" }),
+    TrangHinhAnh = CuaSo:AddTab({ Title = "Hình Ảnh", Icon = "view" }),
+    TrangKaitan = CuaSo:AddTab({ Title = "Kaitan", Icon = "crown" }),
+    TrangManh = CuaSo:AddTab({ Title = "Mạnh", Icon = "apple" }),
+    TrangCuong = CuaSo:AddTab({ Title = "Cường", Icon = "bug" }),
+    TrangQuay = CuaSo:AddTab({ Title = "Quay", Icon = "box" }),
+    TrangVatPham = CuaSo:AddTab({ Title = "Vật Phẩm", Icon = "archive" }),
+    TrangVIP = CuaSo:AddTab({ Title = "Tính Năng VIP", Icon = "star" }), -- Tab VIP mới
+    TrangCaiDat = CuaSo:AddTab({ Title = "Cài Đặt", Icon = "settings" }),
+}
+
+do
+    -- [[ TRANG CHÍNH ]]
+    local TieuDeNguoiChoi = Tabs.TrangChinh:AddSection("Điều Chỉnh Nhân Vật")
+    local TocDoDiChuyenToggle = Tabs.TrangChinh:AddToggle("TocDoDiChuyenToggle", { Title = "Bật Tốc Độ Di Chuyển", Default = getgenv().VandepzaiiiSettings.TocDoDiChuyenToggle or false, Description = "Tăng tốc độ di chuyển của nhân vật." })
+    local TocDoDiChuyenInput = Tabs.TrangChinh:AddInput("TocDoDiChuyenInput", {
+        Title = "Nhập Tốc Độ Di Chuyển",
+        Default = getgenv().VandepzaiiiSettings.TocDoDiChuyenInput or 16,
+        Numeric = true,
+        Finished = false,
+        Placeholder = "Nhập tốc độ (16-100)",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.TocDoDiChuyenInput = GiaTri
+            LuuCaiDat()
+        end
+    })
+    TocDoDiChuyenInput:OnChanged(function(GiaTri)
+        getgenv().VandepzaiiiSettings.TocDoDiChuyenInput = GiaTri
+        LuuCaiDat()
+    end)
+    local LucNhayToggle = Tabs.TrangChinh:AddToggle("LucNhayToggle", { Title = "Bật Lực Nhảy", Default = getgenv().VandepzaiiiSettings.LucNhayToggle or false, Description = "Tăng lực nhảy của nhân vật." })
+    local LucNhayInput = Tabs.TrangChinh:AddInput("LucNhayInput", {
+        Title = "Nhập Lực Nhảy",
+        Default = getgenv().VandepzaiiiSettings.LucNhayInput or 50,
+        Numeric = true,
+        Finished = false,
+        Placeholder = "Nhập lực nhảy (50-200)",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.LucNhayInput = GiaTri
+            LuuCaiDat()
+        end
+    })
+    LucNhayInput:OnChanged(function(GiaTri)
+        getgenv().VandepzaiiiSettings.LucNhayInput = GiaTri
+        LuuCaiDat()
+    end)
+
+    local TieuDeVungAnhHuong = Tabs.TrangChinh:AddSection("Vùng Ảnh Hưởng")
+    local VungAnhHuongToggle = Tabs.TrangChinh:AddToggle("VungAnhHuongToggle", { Title = "Bật Vùng Ảnh Hưởng", Default = getgenv().VandepzaiiiSettings.VungAnhHuongToggle or false, Description = "Tăng kích thước vùng ảnh hưởng của bóng." })
+    local VungAnhHuongInput = Tabs.TrangChinh:AddInput("VungAnhHuongInput", {
+        Title = "Kích Thước Vùng Ảnh Hưởng",
+        Default = getgenv().VandepzaiiiSettings.VungAnhHuongInput or 10,
+        Placeholder = "Nhập kích thước (1-30)",
+        Numeric = true,
+        Finished = false,
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.VungAnhHuongInput = GiaTri
+            LuuCaiDat()
+        end
+    })
+    VungAnhHuongInput:OnChanged(function(GiaTri)
+        getgenv().VandepzaiiiSettings.VungAnhHuongInput = GiaTri
+        LuuCaiDat()
+    end)
+    local PhimTatVungAnhHuong = Tabs.TrangChinh:AddKeybind("PhimTatVungAnhHuong", {
+        Title = "Phím Tắt Bật/Tắt Vùng Ảnh Hưởng",
+        Mode = "Toggle",
+        Default = "",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.PhimTatVungAnhHuong = GiaTri
+        end,
+        ChangedCallback = function(PhimMoi)
+            getgenv().VandepzaiiiSettings.PhimTatVungAnhHuong = PhimMoi
+        end
+    })
+
+    local TieuDeKhac = Tabs.TrangChinh:AddSection("Tính Năng Khác")
+    local TuDongDribble = Tabs.TrangChinh:AddToggle("TuDongDribble", { Title = "Tự Động Dẫn Bóng", Description = "Tự động dẫn bóng một cách mượt mà.", Default = getgenv().VandepzaiiiSettings.TuDongDribble or false })
+    local ChuyenNangCapToggle = Tabs.TrangChinh:AddToggle("ChuyenNangCapToggle", { Title = "Chế Độ Nâng Cấp", Description = "Kích hoạt các tính năng VIP trong game.", Default = getgenv().VandepzaiiiSettings.ChuyenNangCapToggle or false })
+    local NangLuongVoHanButton = Tabs.TrangChinh:AddButton({
+        Title = "Năng Lượng Vô Hạn",
+        Description = "Bấm để kích hoạt năng lượng vô hạn (không thể tắt).",
+        Callback = function()
+            if not getgenv().VandepzaiiiSettings.NangLuongVoHan then
+                getgenv().VandepzaiiiSettings.NangLuongVoHan = true
+                LuuCaiDat()
+                Fluent:Notify({
+                    Title = "Vandepzaiii Hub",
+                    Content = "Đã kích hoạt năng lượng vô hạn!",
+                    Duration = 3
+                })
+            else
+                Fluent:Notify({
+                    Title = "Vandepzaiii Hub",
+                    Content = "Năng lượng vô hạn đã được kích hoạt trước đó!",
+                    Duration = 3
+                })
             end
         end
-        wait(0.03)
-    end
-end)()
-
--- Auto GK
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.AutoGK and Player.Team then
-            local khungThanh = Services.Workspace.Goals[Player.Team.Name]
-            if khungThanh then
-                local viTriGK = khungThanh.Position + Vector3.new(0, 0, -10)
-                RootPart.CFrame = CFrame.new(viTriGK)
-                local bong = Services.Workspace:FindFirstChild("Football")
-                if bong then
-                    local kc = (viTriGK - bong.Position).Magnitude
-                    if kc < 20 then
-                        local huong = (bong.Position - viTriGK).Unit
-                        RootPart.CFrame = CFrame.new(viTriGK, bong.Position)
-                        if kc < 10 then
-                            bong.Velocity = -huong * 150
-                            Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
-                            pcall(function()
-                                Humanoid:LoadAnimation(game.ReplicatedStorage.Animations.SaveAnimation):Play()
-                            end)
+    })
+    task.spawn(function()
+        while task.wait(0.03) do -- Tối ưu vòng lặp
+            if getgenv().VandepzaiiiSettings.NangLuongVoHan then
+                pcall(function()
+                    local plr = game.Players.LocalPlayer
+                    local stats = plr:FindFirstChild("PlayerStats")
+                    if stats then
+                        local nangLuong = stats:FindFirstChild("Stamina")
+                        if nangLuong then
+                            nangLuong:Destroy()
+                            local nangLuongGia = Instance.new("NumberValue")
+                            nangLuongGia.Name = "Stamina"
+                            nangLuongGia.Value = math.huge
+                            nangLuongGia.Parent = stats
                         end
                     end
-                end
+                end)
             end
         end
-        wait(0.02)
-    end
-end)()
-
--- Kaiser Impact
-local function KaiserShoot(bong, mucTieu)
-    local batDau = bong.Position
-    local ketThuc = mucTieu.Position + Vector3.new(0, 2, 0)
-    local thoiGian = 0.5
-    local chieuCao = 30
-    local cong = 8
-    local thoiGianBatDau = tick()
-    Services.RunService.RenderStepped:Connect(function()
-        local t = (tick() - thoiGianBatDau) / thoiGian
-        if t > 1 then
-            bong.Velocity = Vector3.new(0, 0, 0)
-            return
-        end
-        local viTri = batDau:Lerp(ketThuc, t)
-        local doCong = math.sin(t * math.pi) * chieuCao
-        local offset = math.sin(t * math.pi * cong) * 12
-        bong.Velocity = (ketThuc - batDau).Unit * 150 + Vector3.new(0, doCong, 0)
-        bong.CFrame = CFrame.new(viTri.X + offset, batDau.Y + doCong, viTri.Z)
-        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1500, nil, nil, ketThuc)
     end)
-end
 
--- Curve Shot
-local function CurveShoot(bong, mucTieu)
-    local batDau = bong.Position
-    local ketThuc = mucTieu.Position + Vector3.new(0, 2, 0)
-    local thoiGian = 0.7
-    local chieuCao = 25
-    local cong = 10
-    local thoiGianBatDau = tick()
-    Services.RunService.RenderStepped:Connect(function()
-        local t = (tick() - thoiGianBatDau) / thoiGian
-        if t > 1 then
-            bong.Velocity = Vector3.new(0, 0, 0)
-            return
+    local TieuDeNangCao = Tabs.TrangChinh:AddSection("Tính Năng Nâng Cao")
+    local PhimTatSutNhanToggle = Tabs.TrangChinh:AddKeybind("PhimTatSutNhanToggle", {
+        Title = "Phím Tắt Sút Nhanh",
+        Mode = "Toggle",
+        Default = "",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.PhimTatSutNhanToggle = GiaTri
+        end,
+        ChangedCallback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.PhimTatSutNhanToggle = GiaTri
         end
-        local viTri = batDau:Lerp(ketThuc, t)
-        local doCong = math.sin(t * math.pi) * chieuCao
-        local offset = math.cos(t * math.pi * cong) * 20
-        bong.Velocity = (ketThuc - batDau).Unit * 120 + Vector3.new(0, doCong, 0)
-        bong.CFrame = CFrame.new(viTri.X + offset, batDau.Y + doCong, viTri.Z) * CFrame.Angles(0, t * math.rad(720), 0)
-        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1200, nil, nil, ketThuc)
+    })
+    local CongSuatInput = Tabs.TrangChinh:AddInput("CongSuatInput", {
+        Title = "Điều Chỉnh Công Suất Sút (1-100000)",
+        Default = getgenv().VandepzaiiiSettings.CongSuatInput or "500",
+        Placeholder = "Nhập công suất...",
+        Numeric = true,
+        Finished = false,
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.CongSuatInput = tonumber(GiaTri)
+            LuuCaiDat()
+        end
+    })
+    CongSuatInput:OnChanged(function(GiaTri)
+        getgenv().VandepzaiiiSettings.CongSuatInput = tonumber(GiaTri)
+        LuuCaiDat()
     end)
-end
 
-Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot.OnClientEvent:Connect(function()
-    local bong = Services.Workspace:FindFirstChild("Football")
-    if bong then
-        local mucTieu = Services.Workspace.Goals[Player.Team.Name == "Home" and "Away" or "Home"]
-        if getgenv().Vandepzaiii.KaiserImpact then
-            KaiserShoot(bong, mucTieu)
-        elseif getgenv().Vandepzaiii.CurveShot then
-            CurveShoot(bong, mucTieu)
+    -- [[ TRANG HÌNH ẢNH ]]
+    local ESPToggle = Tabs.TrangHinhAnh:AddToggle("ESPToggle", { Title = "Bật ESP", Default = getgenv().VandepzaiiiSettings.ESPToggle or false, Description = "Hiển thị thông tin người chơi trên màn hình." })
+    local KieuESPToggle = Tabs.TrangHinhAnh:AddToggle("KieuESPToggle", { Title = "Hiển Thị Kiểu", Default = getgenv().VandepzaiiiSettings.KieuESPToggle or false, Description = "Hiển thị kiểu chơi của đối thủ." })
+    local ESPKichHoatToggle = Tabs.TrangHinhAnh:AddToggle("ESPKichHoatToggle", { Title = "Hiển Thị Kích Hoạt", Default = getgenv().VandepzaiiiSettings.ESPKichHoatToggle or false, Description = "Hiển thị trạng thái kích hoạt của đối thủ." })
+    local ESPLuongToggle = Tabs.TrangHinhAnh:AddToggle("ESPLuongToggle", { Title = "Hiển Thị Lượng", Default = getgenv().VandepzaiiiSettings.ESPLuongToggle or false, Description = "Hiển thị trạng thái lượng của đối thủ." })
+    local ESPNangLuongToggle = Tabs.TrangHinhAnh:AddToggle("ESPNangLuongToggle", { Title = "Hiển Thị Năng Lượng", Default = getgenv().VandepzaiiiSettings.ESPNangLuongToggle or false, Description = "Hiển thị năng lượng của đối thủ." })
+    local DuDoanBongToggle = Tabs.TrangHinhAnh:AddToggle("DuDoanBongToggle", { Title = "Dự Đoán Hướng Bóng", Default = getgenv().VandepzaiiiSettings.DuDoanBongToggle or false, Description = "Hiển thị đường đi dự đoán của bóng." })
+
+    -- [[ TRANG KAITAN ]]
+    local TieuDeTienDao = Tabs.TrangKaitan:AddSection("Tiền Đạo")
+    local TuDongNongToggle = Tabs.TrangKaitan:AddToggle("TuDongNongToggle", { Title = "Tự Động Cày (Dịch Chuyển Mượt)", Default = getgenv().VandepzaiiiSettings.TuDongNongToggle or false, Description = "Tự động cày kinh nghiệm bằng cách dịch chuyển mượt." })
+    local ChuyenTucTuongToggle = Tabs.TrangKaitan:AddToggle("ChuyenTucTuongToggle", { Title = "Tự Động Cày (Dịch Chuyển Tức Thời)", Default = getgenv().VandepzaiiiSettings.ChuyenTucTuongToggle or false, Description = "Tự động cày kinh nghiệm bằng cách dịch chuyển tức thời." })
+    local ManHinhTrang = Tabs.TrangKaitan:AddToggle("ManHinhTrang", { Title = "Màn Hình Trắng [Tiết kiệm GPU]", Default = getgenv().VandepzaiiiSettings.ManHinhTrang or false, Description = "Tắt render 3D để tiết kiệm hiệu năng." })
+
+    local TieuDeKhungThanh = Tabs.TrangKaitan:AddSection("Khung Thành (Nâng Cao)")
+    local TuDongThuMon = Tabs.TrangKaitan:AddToggle("TuDongThuMon", { Title = "Tự Động Thủ Môn", Default = getgenv().VandepzaiiiSettings.TuDongThuMon or false, Description = "Tự động bắt bóng khi làm thủ môn." })
+    local PhimTatThuMon = Tabs.TrangKaitan:AddKeybind("PhimTatThuMon", {
+        Title = "Phím Tắt Tự Động Thủ Môn",
+        Mode = "Toggle",
+        Default = "",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.PhimTatThuMon = GiaTri
+        end,
+        ChangedCallback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.PhimTatThuMon = GiaTri
+        end
+    })
+
+    local TieuDeThuocTinh = Tabs.TrangKaitan:AddSection("Thuộc Tính Đội")
+    local LuaChonViTriDoi = Tabs.TrangKaitan:AddDropdown("LuaChonViTriDoi", {
+        Title = "Chọn Đội và Vị Trí",
+        Description = "Chọn đội và vị trí bạn muốn tham gia.",
+        Values = {
+            "Chủ Nhà_Tiền Đạo Trung Tâm", "Chủ Nhà_Cánh Trái", "Chủ Nhà_Cánh Phải", "Chủ Nhà_Tiền Vệ Trung Tâm", "Chủ Nhà_Tiền Vệ Phòng Ngự", "Chủ Nhà_Trung Vệ", "Chủ Nhà_Thủ Môn",
+            "Khách_Tiền Đạo Trung Tâm", "Khách_Cánh Trái", "Khách_Cánh Phải", "Khách_Tiền Vệ Trung Tâm", "Khách_Tiền Vệ Phòng Ngự", "Khách_Trung Vệ", "Khách_Thủ Môn"
+        },
+        Multi = false,
+        Default = getgenv().VandepzaiiiSettings.LuaChonViTriDoi or "Chủ Nhà_Tiền Đạo Trung Tâm",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.LuaChonViTriDoi = GiaTri
+            LuuCaiDat()
+        end
+    })
+    LuaChonViTriDoi:OnChanged(function(GiaTri)
+        getgenv().VandepzaiiiSettings.LuaChonViTriDoi = GiaTri
+        LuuCaiDat()
+    end)
+    local TuDongDoiHinhToggle = Tabs.TrangKaitan:AddToggle("TuDongDoiHinhToggle", { Title = "Tự Động Chọn Đội & Vị Trí", Default = getgenv().VandepzaiiiSettings.TuDongDoiHinhToggle or false, Description = "Tự động chọn đội và vị trí đã cài đặt." })
+    local TuDongDoiHinhChoNongToggle = Tabs.TrangKaitan:AddToggle("TuDongDoiHinhChoNongToggle", { Title = "Tự Động Chọn Đội & Vị Trí (Dành cho Tự Động Cày)", Default = getgenv().VandepzaiiiSettings.TuDongDoiHinhChoNongToggle or false, Description = "Tự động chọn đội khi cày kinh nghiệm." })
+    local BanNganToggle = Tabs.TrangKaitan:AddToggle("BanNganToggle", { Title = "Bàn Ngắn (Chỉ Dành Cho Tự Động Cày)", Default = getgenv().VandepzaiiiSettings.BanNganToggle or false, Description = "Tự động ghi bàn nhanh khi cày." })
+
+    local TieuDeNhayServer = Tabs.TrangKaitan:AddSection("Nhảy Server")
+    local NhayServerToggle = Tabs.TrangKaitan:AddToggle("NhayServerToggle", { Title = "Tự Động Nhảy Server", Default = getgenv().VandepzaiiiSettings.NhayServerToggle or false, Description = "Tự động nhảy server nếu số người chơi thấp." })
+    local NguongNhayServerInput = Tabs.TrangKaitan:AddInput("NguongNhayServerInput", {
+        Title = "Ngưỡng Nhảy Server Khi Số Người ≤",
+        Description = "Nhảy server nếu số người chơi dưới ngưỡng này.",
+        Default = getgenv().VandepzaiiiSettings.NguongNhayServerInput or 4,
+        Placeholder = "Nhập số lượng người chơi",
+        Numeric = true,
+        Finished = false,
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.NguongNhayServerInput = tonumber(GiaTri)
+            LuuCaiDat()
+        end
+    })
+    NguongNhayServerInput:OnChanged(function(GiaTri)
+        getgenv().VandepzaiiiSettings.NguongNhayServerInput = tonumber(GiaTri)
+        LuuCaiDat()
+    end)
+
+    -- [[ TRANG MẠNH ]]
+    local KaiserToggle = Tabs.TrangManh:AddToggle("KaiserToggle", { Title = "Kaiser Impact", Default = getgenv().VandepzaiiiSettings.KaiserToggle or false, Description = "Kích hoạt kỹ năng sút Kaiser Impact." })
+    local PhimTatKaiser = Tabs.TrangManh:AddKeybind("PhimTatKaiser", {
+        Title = "Phím Tắt Bật/Tắt Kaiser Impact",
+        Mode = "Toggle",
+        Default = "",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.PhimTatKaiser = GiaTri
+        end,
+        ChangedCallback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.PhimTatKaiser = GiaTri
+        end
+    })
+    local SutCongProMaxToggle = Tabs.TrangManh:AddToggle("SutCongProMaxToggle", { Title = "Sút Cong Pro Max", Default = getgenv().VandepzaiiiSettings.SutCongProMaxToggle or false, Description = "Kích hoạt kỹ năng sút cong nâng cao." })
+    local PhimTatSutCongProMax = Tabs.TrangManh:AddKeybind("PhimTatSutCongProMax", {
+        Title = "Phím Tắt Bật/Tắt Sút Cong",
+        Mode = "Toggle",
+        Default = "",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.PhimTatSutCongProMax = GiaTri
+        end,
+        ChangedCallback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.PhimTatSutCongProMax = GiaTri
+        end
+    })
+
+    local TieuDeKyNang = Tabs.TrangManh:AddSection("Không Hồi Chiêu Kỹ Năng (Yêu cầu Wave)")
+    local KhongCooldownCapToggle = Tabs.TrangManh:AddToggle("KhongCooldownCapToggle", { Title = "Không Hồi Chiêu - Cướp Bóng", Default = getgenv().VandepzaiiiSettings.KhongCooldownCapToggle or false, Description = "Loại bỏ thời gian hồi chiêu của kỹ năng cướp bóng." })
+    local KhongCooldownDribbleKhongKhiToggle = Tabs.TrangManh:AddToggle("KhongCooldownDribbleKhongKhiToggle", { Title = "Không Hồi Chiêu - Dẫn Bóng Trên Không", Default = getgenv().VandepzaiiiSettings.KhongCooldownDribbleKhongKhiToggle or false, Description = "Loại bỏ thời gian hồi chiêu của kỹ năng dẫn bóng trên không." })
+    local KhongCooldownDichChuyenKhongKhiToggle = Tabs.TrangManh:AddToggle("KhongCooldownDichChuyenKhongKhiToggle", { Title = "Không Hồi Chiêu - Dịch Chuyển Trên Không", Default = getgenv().VandepzaiiiSettings.KhongCooldownDichChuyenKhongKhiToggle or false, Description = "Loại bỏ thời gian hồi chiêu của kỹ năng dịch chuyển trên không." })
+
+    -- [[ TRANG CƯỜNG ]]
+    local ChuyenLagToggle = Tabs.TrangCuong:AddToggle("ChuyenLagToggle", { Title = "Chuyển Lag", Default = getgenv().VandepzaiiiSettings.ChuyenLagToggle or false, Description = "Tạo độ trễ để gây khó khăn cho đối thủ." })
+
+    -- [[ TRANG QUAY ]]
+    local TieuDeKieu = Tabs.TrangQuay:AddSection("Quay Kiểu")
+    local LuaChonKieuKhoaDropdown = Tabs.TrangQuay:AddDropdown("LuaChonKieuKhoaDropdown", {
+        Title = "Khóa Kiểu",
+        Description = "Chọn các kiểu để dừng quay.",
+        Values = {"Isagi", "Chigiri", "Bachira", "Otoya", "Hiori", "Gagamaru", "King", "Nagi", "Reo", "Karasu", "Shidou", "Kunigami", "Sae", "Aiku", "Rin", "Yukimiya", "Don Lorenzo"},
+        Multi = true,
+        Default = {}
+    })
+    LuaChonKieuKhoaDropdown:OnChanged(function(GiaTri)
+        local DanhSachGiaTri = {}
+        for GiaTri, TrangThai in next, GiaTri do
+            table.insert(DanhSachGiaTri, GiaTri)
+        end
+        getgenv().VandepzaiiiSettings.LuaChonKieuKhoaDropdown = DanhSachGiaTri
+        LuuCaiDat()
+    end)
+    local TuDongQuayKieuToggle = Tabs.TrangQuay:AddToggle("TuDongQuayKieuToggle", { Title = "Tự Động Quay Kiểu", Default = getgenv().VandepzaiiiSettings.TuDongQuayKieuToggle or false, Description = "Tự động quay kiểu cho đến khi đạt kiểu mong muốn." })
+
+    local TieuDeLuong = Tabs.TrangQuay:AddSection("Quay Lượng")
+    local LuaChonLuongKhoaDropdown = Tabs.TrangQuay:AddDropdown("LuaChonLuongKhoaDropdown", {
+        Title = "Khóa Lượng",
+        Description = "Chọn lượng để dừng quay.",
+        Values = { "Băng", "Sét", "Câu Đố", "Quái Vật", "Gió Bão", "Thiên Tài", "Bản Năng Vua", "Bẫy", "Quạ", "Cánh Quỷ", "Tắc Kè Hoa", "Lá Bài Đen", "Rắn", "Thần Đồng", "Thiên Tài Thức Tỉnh", "Người Dẫn Bóng"},
+        Multi = true,
+        Default = {}
+    })
+    LuaChonLuongKhoaDropdown:OnChanged(function(GiaTri)
+        local DanhSachGiaTri = {}
+        for GiaTri, TrangThai in next, GiaTri do
+            table.insert(DanhSachGiaTri, GiaTri)
+        end
+        getgenv().VandepzaiiiSettings.LuaChonLuongKhoaDropdown = DanhSachGiaTri
+        LuuCaiDat()
+    end)
+    local TuDongQuayLuongToggle = Tabs.TrangQuay:AddToggle("TuDongQuayLuongToggle", { Title = "Tự Động Quay Lượng", Default = getgenv().VandepzaiiiSettings.TuDongQuayLuongToggle or false, Description = "Tự động quay lượng cho đến khi đạt lượng mong muốn." })
+
+    -- [[ TRANG VẬT PHẨM ]]
+    local TieuDeHieuUng = Tabs.TrangVatPham:AddSection("Hiệu Ứng Ghi Bàn")
+    local DanhSachVatPham = {
+        HieuUng = {},
+        TrangPhuc = {},
+        The = {},
+    }
+    local function LayTatCaVatPham()
+        for _, v in ipairs(game:GetService("ReplicatedStorage").Assets.GoalEffects:GetChildren()) do
+            table.insert(DanhSachVatPham.HieuUng, v.Name)
+        end
+        for _, v in ipairs(game:GetService("ReplicatedStorage").Assets.Cosmetics:GetChildren()) do
+            table.insert(DanhSachVatPham.TrangPhuc, v.Name)
+        end
+        for _, v in ipairs(game:GetService("ReplicatedStorage").Assets.Customization.Cards:GetChildren()) do
+            table.insert(DanhSachVatPham.The, v.Name)
         end
     end
-end)
-
--- Auto Goal
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.AutoGoal then
-            local bong = Services.Workspace:FindFirstChild("Football")
-            if bong and Player.Team then
-                local kc = (RootPart.Position - bong.Position).Magnitude
-                if kc > 5 then
-                    RootPart.CFrame = bong.CFrame + Vector3.new(0, 3, 0)
-                    wait(0.1)
-                end
-                local mucTieu = Services.Workspace.Goals[Player.Team.Name == "Home" and "Away" or "Home"]
-                if mucTieu then
-                    local huong = (mucTieu.Position - bong.Position).Unit
-                    bong.Velocity = huong * 600
-                    local shootData = {
-                        Power = 4000,
-                        Direction = huong,
-                        BallId = bong,
-                        TargetPosition = mucTieu.Position + Vector3.new(0, 5, 0)
-                    }
-                    pcall(function()
-                        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(shootData.Power, shootData.Direction, shootData.BallId, shootData.TargetPosition)
-                        ThongBao("Auto Goal", "Đã sút với Power: " .. shootData.Power .. ", Target: " .. tostring(shootData.TargetPosition))
-                        Humanoid:LoadAnimation(game.ReplicatedStorage.Animations.ShootAnimation):Play()
-                    end)
-                end
+    LayTatCaVatPham()
+    local LuaChonHieuUngDropdown = Tabs.TrangVatPham:AddDropdown("LuaChonHieuUngDropdown", {
+        Title = "Hiệu Ứng Ghi Bàn",
+        Values = DanhSachVatPham.HieuUng,
+        Multi = false,
+        Default = getgenv().VandepzaiiiSettings.LuaChonHieuUngDropdown or "",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.LuaChonHieuUngDropdown = GiaTri
+            LuuCaiDat()
+        end
+    })
+    LuaChonHieuUngDropdown:OnChanged(function(GiaTri)
+        getgenv().VandepzaiiiSettings.LuaChonHieuUngDropdown = GiaTri
+        LuuCaiDat()
+    end)
+    local NutApDungHieuUng = Tabs.TrangVatPham:AddButton({
+        Title = "Áp Dụng Hiệu Ứng",
+        Callback = function()
+            if getgenv().VandepzaiiiSettings.LuaChonHieuUngDropdown ~= "" then
+                game:GetService("ReplicatedStorage").Packages.Knit.Services.CustomizationService.RE.Customize:FireServer("GoalEffects", getgenv().VandepzaiiiSettings.LuaChonHieuUngDropdown)
+                Fluent:Notify({
+                    Title = "Vandepzaiii Hub",
+                    Content = "Đã áp dụng hiệu ứng ghi bàn: " .. tostring(getgenv().VandepzaiiiSettings.LuaChonHieuUngDropdown),
+                    Duration = 5
+                })
+            else
+                Fluent:Notify({
+                    Title = "Vandepzaiii Hub",
+                    Content = "Vui lòng chọn một hiệu ứng ghi bàn trước!",
+                    Duration = 3
+                })
             end
         end
-        wait(0.02)
-    end
-end)()
+    })
 
--- Server Crasher
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.ServerCrasher then
-            for i = 1, 200 do
-                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(math.huge, nil, nil, Vector3.new(math.random(-10000, 10000), math.random(-10000, 10000), math.random(-10000, 10000)))
+    local TieuDeTrangPhuc = Tabs.TrangVatPham:AddSection("Trang Phục")
+    local LuaChonTrangPhucDropdown = Tabs.TrangVatPham:AddDropdown("LuaChonTrangPhucDropdown", {
+        Title = "Trang Phục",
+        Values = DanhSachVatPham.TrangPhuc,
+        Multi = false,
+        Default = getgenv().VandepzaiiiSettings.LuaChonTrangPhucDropdown or "",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.LuaChonTrangPhucDropdown = GiaTri
+            LuuCaiDat()
+        end
+    })
+    LuaChonTrangPhucDropdown:OnChanged(function(GiaTri)
+        getgenv().VandepzaiiiSettings.LuaChonTrangPhucDropdown = GiaTri
+        LuuCaiDat()
+    end)
+    local NutApDungTrangPhuc = Tabs.TrangVatPham:AddButton({
+        Title = "Áp Dụng Trang Phục",
+        Callback = function()
+            if getgenv().VandepzaiiiSettings.LuaChonTrangPhucDropdown ~= "" then
+                game:GetService("ReplicatedStorage").Packages.Knit.Services.CustomizationService.RE.Customize:FireServer("Cosmetics", getgenv().VandepzaiiiSettings.LuaChonTrangPhucDropdown)
+                Fluent:Notify({
+                    Title = "Vandepzaiii Hub",
+                    Content = "Đã áp dụng trang phục: " .. tostring(getgenv().VandepzaiiiSettings.LuaChonTrangPhucDropdown),
+                    Duration = 5
+                })
+            else
+                Fluent:Notify({
+                    Title = "Vandepzaiii Hub",
+                    Content = "Vui lòng chọn một trang phục trước!",
+                    Duration = 3
+                })
             end
         end
-        wait(0.03)
-    end
-end)()
+    })
 
--- Hitbox
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.Hitbox.Bat then
-            for _, bong in pairs(Services.Workspace:GetChildren()) do
-                if bong.Name == "Football" and bong:FindFirstChild("Hitbox") then
-                    bong.Hitbox.Size = Vector3.new(getgenv().Vandepzaiii.Hitbox.KichThuoc, getgenv().Vandepzaiii.Hitbox.KichThuoc, getgenv().Vandepzaiii.Hitbox.KichThuoc)
-                    bong.Hitbox.Transparency = 0.7
-                    bong.Hitbox.Material = Enum.Material.Neon
+    local TieuDeThe = Tabs.TrangVatPham:AddSection("Thẻ")
+    local LuaChonTheDropdown = Tabs.TrangVatPham:AddDropdown("LuaChonTheDropdown", {
+        Title = "Thẻ",
+        Values = DanhSachVatPham.The,
+        Multi = false,
+        Default = getgenv().VandepzaiiiSettings.LuaChonTheDropdown or "",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.LuaChonTheDropdown = GiaTri
+            LuuCaiDat()
+        end
+    })
+    LuaChonTheDropdown:OnChanged(function(GiaTri)
+        getgenv().VandepzaiiiSettings.LuaChonTheDropdown = GiaTri
+        LuuCaiDat()
+    end)
+    local NutApDungThe = Tabs.TrangVatPham:AddButton({
+        Title = "Áp Dụng Thẻ",
+        Callback = function()
+            if getgenv().VandepzaiiiSettings.LuaChonTheDropdown ~= "" then
+                game:GetService("ReplicatedStorage").Packages.Knit.Services.CustomizationService.RE.Customize:FireServer("Cards", getgenv().VandepzaiiiSettings.LuaChonTheDropdown)
+                Fluent:Notify({
+                    Title = "Vandepzaiii Hub",
+                    Content = "Đã áp dụng thẻ: " .. tostring(getgenv().VandepzaiiiSettings.LuaChonTheDropdown),
+                    Duration = 5
+                })
+            else
+                Fluent:Notify({
+                    Title = "Vandepzaiii Hub",
+                    Content = "Vui lòng chọn một thẻ trước!",
+                    Duration = 3
+                })
+            end
+        end
+    })
+
+    -- [[ TRANG TÍNH NĂNG VIP ]]
+    local TinhNangVIP = Tabs.TrangVIP:AddSection("Tính Năng Độc Quyền VIP")
+    local TuDongGhiBanToggle = Tabs.TrangVIP:AddToggle("TuDongGhiBanToggle", { Title = "Tự Động Ghi Bàn", Description = "Tự động ghi bàn với thuật toán thông minh.", Default = getgenv().VandepzaiiiSettings.TuDongGhiBanToggle or false })
+    local BaoVeChongBanToggle = Tabs.TrangVIP:AddToggle("BaoVeChongBanToggle", { Title = "Bảo Vệ Chống Cấm", Description = "Giảm nguy cơ bị cấm bởi hệ thống.", Default = getgenv().VandepzaiiiSettings.BaoVeChongBanToggle or true })
+    local TuDongComboKyNangToggle = Tabs.TrangVIP:AddToggle("TuDongComboKyNangToggle", { Title = "Tự Động Combo Kỹ Năng", Description = "Tự động thực hiện các combo kỹ năng đẹp mắt.", Default = getgenv().VandepzaiiiSettings.TuDongComboKyNangToggle or false })
+    local ChuDeGiaoDienDropdown = Tabs.TrangVIP:AddDropdown("ChuDeGiaoDienDropdown", {
+        Title = "Chủ Đề Giao Diện",
+        Description = "Chọn chủ đề giao diện cao cấp.",
+        Values = {"Tối", "Sáng", "Vàng", "Neon"},
+        Multi = false,
+        Default = getgenv().VandepzaiiiSettings.ChuDeGiaoDien or "Vàng",
+        Callback = function(GiaTri)
+            getgenv().VandepzaiiiSettings.ChuDeGiaoDien = GiaTri
+            LuuCaiDat()
+            Fluent:Notify({
+                Title = "Vandepzaiii Hub",
+                Content = "Đã thay đổi chủ đề thành: " .. GiaTri,
+                Duration = 3
+            })
+        end
+    })
+    local CheDoHieuSuatToggle = Tabs.TrangVIP:AddToggle("CheDoHieuSuatToggle", { Title = "Chế Độ Hiệu Suất", Description = "Tối ưu cho thiết bị cấu hình thấp.", Default = getgenv().VandepzaiiiSettings.CheDoHieuSuat or false })
+    local TuDongKetNoiLaiToggle = Tabs.TrangVIP:AddToggle("TuDongKetNoiLaiToggle", { Title = "Tự Động Kết Nối Lại", Description = "Tự động kết nối lại khi mất kết nối.", Default = getgenv().VandepzaiiiSettings.TuDongKetNoiLaiToggle or false })
+    local AmThanhThongBaoVIPToggle = Tabs.TrangVIP:AddToggle("AmThanhThongBaoVIPToggle", { Title = "Âm Thanh Thông Báo VIP", Description = "Kích hoạt âm thanh thông báo cao cấp.", Default = getgenv().VandepzaiiiSettings.AmThanhThongBaoVIP or false })
+    local TuDongTangQuaToggle = Tabs.TrangVIP:AddToggle("TuDongTangQuaToggle", { Title = "Tự Động Tặng Quà", Description = "Tự động tặng quà cho người chơi khác để tăng tương tác.", Default = getgenv().VandepzaiiiSettings.TuDongTangQuaToggle or false })
+
+    -- [[ TRANG CÀI ĐẶT ]]
+    SaveManager:BuildConfigSection(Tabs.TrangCaiDat)
+    InterfaceManager:BuildInterfaceSection(Tabs.TrangCaiDat)
+
+    -- [[ DỊCH VỤ VÀ BIẾN SỐ ]]
+    local DichVu = {
+        Players = game:GetService("Players"),
+        RunService = game:GetService("RunService"),
+        ReplicatedStorage = game:GetService("ReplicatedStorage"),
+        Workspace = game:GetService("Workspace"),
+        VirtualInputManager = game:GetService("VirtualInputManager"),
+        TeleportService = game:GetService("TeleportService"),
+        HttpService = game:GetService("HttpService"),
+        TweenService = game:GetService("TweenService"),
+        CollectionService = game:GetService("CollectionService"),
+        CoreGui = game:GetService("CoreGui"),
+        SoundService = game:GetService("SoundService")
+    }
+
+    local nguoiChoi = DichVu.Players.LocalPlayer
+    local chuot = nguoiChoi:GetMouse()
+    local nhanVat = nguoiChoi.Character or nguoiChoi.CharacterAdded:Wait()
+    local nhanVatConNguoi = nhanVat:FindFirstChild("Humanoid") or nhanVat:WaitForChild("Humanoid", 9e99)
+    local gocNhanVatConNguoi = nhanVat:FindFirstChild("HumanoidRootPart") or nhanVat:WaitForChild("HumanoidRootPart", 9e99)
+    local mayQuay = DichVu.Workspace.CurrentCamera
+
+    local DieuKhienTuXa = {
+        DanBong = DichVu.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble,
+        Sut = DichVu.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot,
+        Lao = DichVu.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dive,
+        DichVuDoi = DichVu.ReplicatedStorage.Packages.Knit.Services.TeamService
+    }
+
+    local BienRac_Variables = {
+        ChucNang_Bien = {
+            LayTatCaTuBoSuuTap = { cacThucTheDuocDanhDau },
+            LayBongTrongNguoiChoi = { BongDa },
+            KichHoatQ = { KhoangCach },
+            TaoBangQuangCao = { BangQuangCao },
+            TaoThanhHinhAnh = { giaoDien, khung },
+            TaoThanh = { KhungNen, KhungDien },
+            KhiNhanVatDuocThem = { GocNhanVatConNguoi, giaoDienKieu, vanBanKieu, giaoDienKichHoat, khungKichHoat, giaoDienLuong, khungLuong, giaoDienNangLuong, khungNangLuong, thanhKichHoat, thanhLuong, thanhNangLuong, KhoangCach, ThongKeNguoiChoi },
+            TaoESP = { duLieuESP },
+            DichChuyenBongDenKhungThanh = { bong }
+        },
+        TinhNangESP = {
+            ESPKichHoat = false,
+            TinhNangESP = { Kieu = false, KichHoat = false, Luong = false, NangLuong = false },
+            DoiTuongESP = {}
+        },
+        TocDoDiChuyenToggle = { KetNoiTocDoDiChuyen },
+        VungAnhHuongToggle = { BongDa, VungAnhHuong, NhanVat },
+        PhimTatVungAnhHuong = { TrangThai },
+        TuDongDribble = { theoDoi = {}, NguoiChoiMucTieu, KhoangCach, DangTruot, coDangTruot },
+        ChuyenNangCapToggle = { coNangCap },
+        Tia = {
+            bong,
+            viTriCuoi,
+            TRONG_LUC = workspace.Gravity,
+            BUOC_THOI_GIAN = 0.03, -- Tối ưu cho dự đoán mượt mà hơn
+            THOI_GIAN_TOI_DA = 3,
+            NGUONG_VAN_TOC = 1,
+            NGUONG_DI_CHUYEN = 1,
+            phanTia,
+            chuyenDong
+        },
+        PhimTatThuMon = { TrangThai, bong, KhoangCach },
+        TuDongDoiHinhToggle = { giaTriDaChon, doi, viTri },
+        PhimTatKaiser = { TrangThai },
+        PhimTatSutCongProMax = { TrangThai },
+        KhongCooldownCapToggle = { capMoi },
+        KhongCooldownDribbleKhongKhiToggle = {},
+        KhongCooldownDichChuyenKhongKhiToggle = {}
+    }
+
+    local khungThanhCFrames = {
+        ChuNha = {
+            CFrame.new(323.849396, 11.1665344, -29.958168, -0.346998423, -2.85511348e-08, -0.937865734, 2.543152e-08, 1, -3.98520079e-08, 0.937865734, -3.76799356e-08, -0.346998423),
+            CFrame.new(326.027893, 11.1665325, -67.0218277, 0.910013974, -1.74189319e-09, -0.414577574, -1.44234642e-08, 1, -3.58616781e-08, 0.414577574, 3.86142709e-08, 0.910013974)
+        },
+        Khach = {
+            CFrame.new(-247.79953, 11.1665344, -68.2236633, 0.441729337, -3.98036413e-08, -0.897148371, 8.61732801e-08, 1, -1.93767069e-09, 0.897148371, -7.64542918e-08, 0.441729337),
+            CFrame.new(-247.711075, 25.6309118, -30.344408, 0.936370671, 0.0215997752, -0.350347638, -3.86210353e-08, 0.99810493, 0.0615354702, 0.351012826, -0.0576199964, 0.934596181)
+        }
+    }
+
+    -- [[ LƯU TRỮ CHỨC NĂNG ]]
+    local LuuTruChucNang = {}
+
+    LuuTruChucNang.LayTatCaTuBoSuuTap = function(tenDanhDau)
+        BienRac_Variables.ChucNang_Bien.LayTatCaTuBoSuuTap.cacThucTheDuocDanhDau = DichVu.CollectionService:GetTagged(tenDanhDau)
+        return BienRac_Variables.ChucNang_Bien.LayTatCaTuBoSuuTap.cacThucTheDuocDanhDau
+    end
+
+    LuuTruChucNang.LayBong = function()
+        for _, doiTuong in pairs(LuuTruChucNang.LayTatCaTuBoSuuTap("Football")) do
+            if doiTuong.Name == "Football" and doiTuong.Parent ~= DichVu.ReplicatedStorage.Assets then
+                return doiTuong
+            end
+        end
+    end
+
+    LuuTruChucNang.LayBongTrongNguoiChoi = function()
+        BienRac_Variables.ChucNang_Bien.LayBongTrongNguoiChoi.BongDa = LuuTruChucNang.LayBong()
+        if not BienRac_Variables.ChucNang_Bien.LayBongTrongNguoiChoi.BongDa then return false end
+        for ChiSoNguoiChoi, GiaTriNguoiChoi in ipairs(game.Players:GetPlayers()) do
+            if GiaTriNguoiChoi ~= nguoiChoi and GiaTriNguoiChoi.Character and BienRac_Variables.ChucNang_Bien.LayBongTrongNguoiChoi.BongDa:IsDescendantOf(GiaTriNguoiChoi.Character) then
+                return true
+            end
+        end
+        return false
+    end
+
+    LuuTruChucNang.NhanPhim = function(MaPhim)
+        DichVu.VirtualInputManager:SendKeyEvent(true, MaPhim, false, nil)
+        task.wait(0.05)
+        DichVu.VirtualInputManager:SendKeyEvent(false, MaPhim, false, nil)
+    end
+
+    LuuTruChucNang.CapNhatKichThuocVungAnhHuong = function(VungAnhHuongMucTieu, DoTrongSuot, KichThuocVungAnhHuong)
+        VungAnhHuongMucTieu.Material = Enum.Material.ForceField
+        VungAnhHuongMucTieu.BrickColor = BrickColor.new("Neon orange")
+        VungAnhHuongMucTieu.Transparency = DoTrongSuot
+        VungAnhHuongMucTieu.Size = Vector3.new(KichThuocVungAnhHuong, KichThuocVungAnhHuong, KichThuocVungAnhHuong)
+    end
+
+    LuuTruChucNang.KichHoatQ = function(MucTieu)
+        if MucTieu and MucTieu:FindFirstChild("HumanoidRootPart") and nhanVat and nhanVat:FindFirstChild("HumanoidRootPart") then
+            if MucTieu.Team == nguoiChoi.Team then return end
+            BienRac_Variables.ChucNang_Bien.KichHoatQ.KhoangCach = (gocNhanVatConNguoi.Position - MucTieu.HumanoidRootPart.Position).Magnitude
+            if BienRac_Variables.ChucNang_Bien.KichHoatQ.KhoangCach <= 20 then
+                DieuKhienTuXa.DanBong:FireServer()
+                return true
+            end
+        end
+        return false
+    end
+
+    LuuTruChucNang.SutBong = function()
+        local thamSo = {
+            [1] = getgenv().VandepzaiiiSettings.CongSuatInput,
+            [4] = chuot.Hit.Position
+        }
+        game:GetService("ReplicatedStorage").Packages.Knit.Services.BallService.RE.Shoot:FireServer(unpack(thamSo))
+    end
+
+    LuuTruChucNang.TaoESP = function(nguoiChoiKhac)
+        if nguoiChoiKhac == nguoiChoi then return end
+        BienRac_Variables.ChucNang_Bien.TaoESP.duLieuESP = {}
+
+        function KhiNhanVatDuocThem(nhanVatMoi)
+            local gocConNguoi = nhanVatMoi:WaitForChild("HumanoidRootPart", 10)
+            if not gocConNguoi then return end
+
+            function TaoBangQuangCao(kichThuoc, doDich)
+                local bang = Instance.new("BillboardGui")
+                bang.Adornee = gocConNguoi
+                bang.Size = kichThuoc
+                bang.StudsOffset = doDich
+                bang.AlwaysOnTop = true
+                bang.Parent = game.CoreGui
+                return bang
+            end
+
+            local giaoDienKieu = TaoBangQuangCao(UDim2.new(3, 0, 1, 0), Vector3.new(0, 4, 0))
+            local vanBanKieu = Instance.new("TextLabel", giaoDienKieu)
+            vanBanKieu.Size = UDim2.new(1, 0, 1, 0)
+            vanBanKieu.BackgroundTransparency = 1
+            vanBanKieu.TextStrokeTransparency = 0.5
+            vanBanKieu.TextColor3 = getgenv().VandepzaiiiSettings.MauESPVIP -- Màu ESP Vàng VIP
+            vanBanKieu.TextScaled = true
+            vanBanKieu.Text = "Kiểu: ???"
+
+            function TaoThanhHinhAnh(doDich)
+                local giaoDien = TaoBangQuangCao(UDim2.new(2, 0, 6, 0), doDich)
+                local khung = Instance.new("Frame", giaoDien)
+                khung.Size = UDim2.new(1, 0, 1, 0)
+                khung.BackgroundTransparency = 1
+                return giaoDien, khung
+            end
+
+            function TaoThanh(cha, mau, viTri)
+                local nen = Instance.new("Frame", cha)
+                nen.Size = UDim2.new(0.2, 0, 0.8, 0)
+                nen.Position = UDim2.new(viTri, 0, 0.1, 0)
+                nen.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+                nen.BackgroundTransparency = 0.3
+                nen.BorderSizePixel = 0
+
+                local dien = Instance.new("Frame", nen)
+                dien.Size = UDim2.new(1, 0, 1, 0)
+                dien.AnchorPoint = Vector2.new(0, 1)
+                dien.Position = UDim2.new(0, 0, 1, 0)
+                dien.BackgroundColor3 = mau
+                dien.BorderSizePixel = 0
+
+                return dien
+            end
+
+            local giaoDienKichHoat, khungKichHoat = TaoThanhHinhAnh(Vector3.new(4, 0, 0))
+            local giaoDienLuong, khungLuong = TaoThanhHinhAnh(Vector3.new(4.2, 0, 0))
+            local giaoDienNangLuong, khungNangLuong = TaoThanhHinhAnh(Vector3.new(4.4, 0, 0))
+
+            local thanhKichHoat = TaoThanh(khungKichHoat, Color3.new(1, 0.2, 0.2), 0)
+            local thanhLuong = TaoThanh(khungLuong, Color3.new(0.921569, 1.000000, 0.200000), 0.25)
+            local thanhNangLuong = TaoThanh(khungNangLuong, Color3.new(0.196078, 0.019608, 1.000000), 0.5)
+
+            table.insert(BienRac_Variables.ChucNang_Bien.TaoESP.duLieuESP, { giaoDien = giaoDienKieu, tinhNang = "Kieu" })
+            table.insert(BienRac_Variables.ChucNang_Bien.TaoESP.duLieuESP, { giaoDien = giaoDienKichHoat, tinhNang = "KichHoat" })
+            table.insert(BienRac_Variables.ChucNang_Bien.TaoESP.duLieuESP, { giaoDien = giaoDienLuong, tinhNang = "Luong" })
+            table.insert(BienRac_Variables.ChucNang_Bien.TaoESP.duLieuESP, { giaoDien = giaoDienNangLuong, tinhNang = "NangLuong" })
+
+            DichVu.RunService.RenderStepped:Connect(function()
+                if nhanVatMoi and gocConNguoi and mayQuay then
+                    local khoangCach = (mayQuay.CFrame.Position - gocConNguoi.Position).Magnitude
+                    giaoDienKieu.Size = UDim2.new(math.clamp(khoangCach / 10, 3, 10), 0, math.clamp(khoangCach / 20, 1, 5), 0)
+
+                    local thongKe = nguoiChoiKhac:FindFirstChild("PlayerStats")
+                    if thongKe then
+                        vanBanKieu.Text = (thongKe:FindFirstChild("Style") and thongKe.Style.Value or "Không có")
+                        thanhKichHoat.Size = UDim2.new(1, 0, math.clamp((thongKe:FindFirstChild("AwakeningBar") and thongKe.AwakeningBar.Value or 0) / 100, 0, 1), 0)
+                        thanhLuong.Size = UDim2.new(1, 0, math.clamp((thongKe:FindFirstChild("FlowBar") and thongKe.FlowBar.Value or 0) / 100, 0, 1), 0)
+                        thanhNangLuong.Size = UDim2.new(1, 0, math.clamp((thongKe:FindFirstChild("Stamina") and thongKe.Stamina.Value or 0) / 100, 0, 1), 0)
+                    end
+
+                    for _, doiTuong in ipairs(BienRac_Variables.ChucNang_Bien.TaoESP.duLieuESP) do
+                        doiTuong.giaoDien.Enabled = BienRac_Variables.TinhNangESP.ESPKichHoat and BienRac_Variables.TinhNangESP.TinhNangESP[doiTuong.tinhNang]
+                    end
                 end
-            end
-        end
-        wait(0.05)
-    end
-end)()
-
--- God Mode
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.GodMode then
-            pcall(function()
-                Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-                RootPart.Anchored = true
-                wait(0.005)
-                RootPart.Anchored = false
-                Humanoid.Health = math.huge
             end)
         end
-        wait(0.02)
-    end
-end)()
 
--- Anti Ban
-coroutine.wrap(function()
-    if getgenv().Vandepzaiii.AntiBan then
-        hookfunction(game:GetService("Players").LocalPlayer.Kick, function() end)
-        for _, v in pairs(getgc(true)) do
-            if type(v) == "function" and getfenv(v).script == game:GetService("ReplicatedStorage") then
-                hookfunction(v, function() end)
+        if nguoiChoiKhac.Character then
+            KhiNhanVatDuocThem(nguoiChoiKhac.Character)
+        end
+        nguoiChoiKhac.CharacterAdded:Connect(KhiNhanVatDuocThem)
+
+        BienRac_Variables.TinhNangESP.DoiTuongESP[nguoiChoiKhac] = BienRac_Variables.ChucNang_Bien.TaoESP.duLieuESP
+    end
+
+    LuuTruChucNang.DichChuyenBongDenKhungThanh = function()
+        BienRac_Variables.ChucNang_Bien.DichChuyenBongDenKhungThanh.bong = LuuTruChucNang.LayBong()
+        if BienRac_Variables.ChucNang_Bien.DichChuyenBongDenKhungThanh.bong then
+            local khungThanh
+            if nguoiChoi.Team and nguoiChoi.Team.Name == "Home" then
+                khungThanh = workspace.Goals.Away
+            elseif nguoiChoi.Team and nguoiChoi.Team.Name == "Away" then
+                khungThanh = workspace.Goals.Home
+            end
+            if khungThanh then
+                BienRac_Variables.ChucNang_Bien.DichChuyenBongDenKhungThanh.bong.CFrame = khungThanh.CFrame + Vector3.new(0, 1, 0)
             end
         end
-        game:GetService("NetworkClient").Connection:Connect(function()
-            return false
+    end
+
+    LuuTruChucNang.TuDongNhayServer = function()
+        local caiDat = getgenv().VandepzaiiiSettings
+        while caiDat.NhayServerToggle do
+            local nguong = tonumber(caiDat.NguongNhayServerInput) or 4
+            if #game:GetService("Players"):GetPlayers() <= nguong then
+                local dichVuTeleport, maCongViec, maNoi = game:GetService("TeleportService"), game.JobId, game.PlaceId
+                local duLieu = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. maNoi .. "/servers/Public?sortOrder=Asc&limit=100"))
+                for _, server in ipairs(duLieu.data) do
+                    if server.id ~= maCongViec and server.playing < server.maxPlayers then
+                        game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(trangThai)
+                            if trangThai == Enum.TeleportState.Started then
+                                queue_on_teleport([[loadstring(game:HttpGet(""))()]])
+                            end
+                        end)
+                        dichVuTeleport:TeleportToPlaceInstance(maNoi, server.id, game:GetService("Players").LocalPlayer)
+                        return
+                    end
+                end
+                task.wait(3)
+            end
+            task.wait(1)
+        end
+    end
+
+    LuuTruChucNang.LayCFrameMucTieuNgauNhien = function(doi)
+        if doi == "Home" then
+            return khungThanhCFrames.ChuNha[math.random(1, #khungThanhCFrames.ChuNha)]
+        elseif doi == "Away" then
+            return khungThanhCFrames.Khach[math.random(1, #khungThanhCFrames.Khach)]
+        end
+    end
+
+    LuuTruChucNang.SutKaiser = function(bong, viTriBatDau, CFrameMucTieu, doCao, thoiGian, doCong)
+        local thoiGianBatDau = tick()
+        local ketNoi
+        local viTriKetThuc = CFrameMucTieu.Position
+        ketNoi = DichVu.RunService.RenderStepped:Connect(function()
+            local thoiGianDaTroi = tick() - thoiGianBatDau
+            if thoiGianDaTroi > thoiGian then
+                bong.CFrame = CFrameMucTieu
+                ketNoi:Disconnect()
+                return
+            end
+            local t = thoiGianDaTroi / thoiGian
+            local viTriXZHienTai = viTriBatDau:Lerp(viTriKetThuc, t)
+            local doCaoCong = math.sin(t * math.pi) * doCao
+            local cong = math.sin(t * math.pi * doCong) * 15
+            bong.CFrame = CFrame.new(viTriXZHienTai.X + cong, viTriBatDau.Y + doCaoCong, viTriXZHienTai.Z)
         end)
     end
-end)()
 
--- Fake Lag
-coroutine.wrap(function()
-    while true do
-        if getgenv().Vandepzaiii.FakeLag then
-            Services.RunService:Set3dRenderingEnabled(false)
-            wait(0.05)
-            Services.RunService:Set3dRenderingEnabled(true)
-        end
-        wait(0.1)
+    LuuTruChucNang.SutCong = function(bong, viTriBatDau, CFrameMucTieu, doCao, thoiGian, doCong)
+        local thoiGianBatDau = tick()
+        local ketNoi
+        local viTriKetThuc = CFrameMucTieu.Position
+        local huongCong = math.random(0, 1) == 0 and -1 or 1
+        ketNoi = DichVu.RunService.RenderStepped:Connect(function()
+            local thoiGianDaTroi = tick() - thoiGianBatDau
+            if thoiGianDaTroi > thoiGian then
+                bong.CFrame = CFrameMucTieu
+                ketNoi:Disconnect()
+                return
+            end
+            local t = thoiGianDaTroi / thoiGian
+            local viTriLerp = viTriBatDau:Lerp(viTriKetThuc, t)
+            local goc = t * math.pi * 2 * doCong
+            local banKinh = 10
+            local doDichNgang = math.cos(goc) * banKinh
+            local doDichDoc = math.sin(goc) * banKinh
+            local doCaoCong = math.sin(t * math.pi) * doCao
+            local hieuUngQuay = math.rad(t * 360 * 4)
+            bong.CFrame = CFrame.new(
+                viTriLerp.X + doDichNgang,
+                viTriBatDau.Y + doCaoCong + doDichDoc,
+                viTriLerp.Z
+            ) * CFrame.Angles(0, hieuUngQuay, 0)
+        end)
     end
-end)()
 
--- Chống AFK
-Services.Players.LocalPlayer.Idled:Connect(function()
-    Services.VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, nil)
-    wait(0.05)
-    Services.VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, nil)
-end)
+    LuuTruChucNang.DichChuyenBongDenKhungThanhKaiser = function()
+        local bong = LuuTruChucNang.LayBong()
+        if bong and bong.Position then
+            local doi = nguoiChoi.Team and nguoiChoi.Team.Name
+            if doi then
+                local viTriBatDau = bong.Position
+                local CFrameMucTieu = LuuTruChucNang.LayCFrameMucTieuNgauNhien(doi)
+                if CFrameMucTieu then
+                    LuuTruChucNang.SutKaiser(bong, viTriBatDau, CFrameMucTieu, 40, 1, 5)
+                end
+            end
+        else
+            warn("Không thể lấy đối tượng bóng!")
+        end
+    end
 
--- Thông báo
-ThongBao("Hoàn Tất", "Hack đã sẵn sàng! Nhấn F để đóng/mở menu.")
+    LuuTruChucNang.DichChuyenBongDenKhungThanhCong = function()
+        local bong = LuuTruChucNang.LayBong()
+        if bong and bong.Position then
+            local doi = nguoiChoi.Team and nguoiChoi.Team.Name
+            if doi then
+                local viTriBatDau = bong.Position
+                local CFrameMucTieu = LuuTruChucNang.LayCFrameMucTieuNgauNhien(doi)
+                if CFrameMucTieu then
+                    LuuTruChucNang.SutCong(bong, viTriBatDau, CFrameMucTieu, 40, 1.5, 5)
+                end
+            end
+        else
+            warn("Không thể lấy đối tượng bóng!")
+        end
+    end
+
+    -- [[ XỬ LÝ SỰ KIỆN ]]
+    TocDoDiChuyenToggle:OnChanged(function()
+        task.spawn(function()
+            getgenv().VandepzaiiiSettings.TocDoDiChuyenToggle = TocDoDiChuyenToggle.Value
+            LuuCaiDat()
+            if TocDoDiChuyenToggle.Value then
+                BienRac_Variables.TocDoDiChuyenToggle.KetNoiTocDoDiChuyen = DichVu.RunService.Stepped:Connect(function()
+                    pcall(function()
+                        nhanVatConNguoi.WalkSpeed = getgenv().VandepzaiiiSettings.TocDoDiChuyenInput
+                    end)
+                end)
+            else
+                if BienRac_Variables.TocDoDiChuyenToggle.KetNoiTocDoDiChuyen then
+                    BienRac_Variables.TocDoDiChuyenToggle.KetNoiTocDoDiChuyen:Disconnect()
+                end
+                pcall(function()
+                    nhanVatConNguoi.WalkSpeed = 16
+                end)
+            end
+        end)
+    end)
+
+    LucNhayToggle:OnChanged(function()
+        task.spawn(function()
+            getgenv().VandepzaiiiSettings.LucNhayToggle = LucNhayToggle.Value
+            LuuCaiDat()
+            if LucNhayToggle.Value then
+                nhanVatConNguoi.JumpPower = getgenv().VandepzaiiiSettings.LucNhayInput
+            else
+                nhanVatConNguoi.JumpPower = 50
+            end
+        end)
+    end)
+
+    VungAnhHuongToggle:OnChanged(function()
+        task.spawn(function()
+            getgenv().VandepzaiiiSettings.VungAnhHuongToggle = VungAnhHuongToggle.Value
+            LuuCaiDat()
+            while getgenv().VandepzaiiiSettings.VungAnhHuongToggle do
+                task.wait()
+                pcall(function()
+                    BienRac_Variables.VungAnhHuongToggle.BongDa = LuuTruChucNang.LayBong()
+                    if BienRac_Variables.VungAnhHuongToggle.BongDa then
+                        BienRac_Variables.VungAnhHuongToggle.VungAnhHuong = BienRac_Variables.VungAnhHuongToggle.BongDa:FindFirstChild("Hitbox")
+                        if BienRac_Variables.VungAnhHuongToggle.VungAnhHuong then
+                            LuuTruChucNang.CapNhatKichThuocVungAnhHuong(BienRac_Variables.VungAnhHuongToggle.VungAnhHuong, 0.5, getgenv().VandepzaiiiSettings.VungAnhHuongInput)
+                        end
+                    end
+                end)
+            end
+        end)
+    end)
+
+    PhimTatVungAnhHuong:OnClick(function()
+        task.spawn(function()
+            BienRac_Variables.PhimTatVungAnhHuong.TrangThai = not VungAnhHuongToggle.Value
+            VungAnhHuongToggle:SetValue(BienRac_Variables.PhimTatVungAnhHuong.TrangThai)
+        end)
+    end)
+
+    TuDongDribble:OnChanged(function()
+        task.spawn(function()
+            getgenv().VandepzaiiiSettings.TuDongDribble = TuDongDribble.Value
+            LuuCaiDat()
+            while TuDongDribble.Value do
+                task.wait()
+                pcall(function()
+                    for ChiSoNguoiChoi, GiaTriNguoiChoi in ipairs(game.Players:GetPlayers()) do
+                        if GiaTriNguoiChoi ~= nguoiChoi and GiaTriNguoiChoi.Character and GiaTriNguoiChoi.Character:FindFirstChild("HumanoidRootPart") then
+                            BienRac_Variables.TuDongDribble.NguoiChoiMucTieu = GiaTriNguoiChoi.Character
+                            if LuuTruChucNang.KichHoatQ(BienRac_Variables.TuDongDribble.NguoiChoiMucTieu) then
+                                BienRac_Variables.TuDongDribble.DangTruot = true
+                                BienRac_Variables.TuDongDribble.coDangTruot = true
+                                task.wait(0.5)
+                                BienRac_Variables.TuDongDribble.coDangTruot = false
+                            end
+                        end
+                    end
+                end)
+            end
+        end)
+    end)
+
+    ChuyenNangCapToggle:OnChanged(function()
+        task.spawn(function()
+            getgenv().VandepzaiiiSettings.ChuyenNangCapToggle = ChuyenNangCapToggle.Value
+            LuuCaiDat()
+            if ChuyenNangCapToggle.Value then
+                BienRac_Variables.ChuyenNangCapToggle.coNangCap = true
+                Fluent:Notify({
+                    Title = "Vandepzaiii Hub",
+                    Content = "Đã kích hoạt chế độ nâng cấp VIP!",
+                    Duration = 3
+                })
+            else
+                BienRac_Variables.ChuyenNangCapToggle.coNangCap = false
+            end
+        end)
+    end)
+
+    ESPToggle:OnChanged(function()
+        task.spawn(function()
+            BienRac_Variables.TinhNangESP.ESPKichHoat = ESPToggle.Value
+            getgenv().VandepzaiiiSettings.ESPToggle = ESPToggle.Value
+            LuuCaiDat()
+            for _, duLieu in pairs(BienRac_Variables.TinhNangESP.DoiTuongESP) do
+                for _, doiTuong in ipairs(duLieu) do
+                    doiTuong.giaoDien.Enabled = BienRac_Variables.TinhNangESP.ESPKichHoat and BienRac_Variables.TinhNangESP.TinhNangESP[doiTuong.tinhNang]
+                end
+            end
+        end)
+    end)
+
+    KieuESPToggle:OnChanged(function()
+        task.spawn(function()
+            BienRac_Variables.TinhNangESP.TinhNangESP["Kieu"] = KieuESPToggle.Value
+            getgenv().VandepzaiiiSettings.KieuESPToggle = KieuESPToggle.Value
+            LuuCaiDat()
+            for _, duLieu in pairs(BienRac_Variables.TinhNangESP.DoiTuongESP) do
+                for _, doiTuong in ipairs(duLieu) do
+                    if doiTuong.tinhNang == "Kieu" then
+                        doiTuong.giaoDien.Enabled = BienRac_Variables.TinhNangESP.ESPKichHoat and BienRac_Variables.TinhNangESP.TinhNangESP["Kieu"]
+                    end
+                end
+            end
+        end)
+    end)
+
+    ESPKichHoatToggle:OnChanged(function()
+        task.spawn(function()
+            BienRac_Variables.TinhNangESP.TinhNangESP["KichHoat"] = ESPKichHoatToggle.Value
+            getgenv().VandepzaiiiSettings.ESPKichHoatToggle = ESPKichHoatToggle.Value
+            LuuCaiDat()
+            for _, duLieu in pairs(BienRac_Variables.TinhNangESP.DoiTuongESP) do
+                for _, doiTuong in ipairs(duLieu) do
+                    if doiTuong.tinhNang == "KichHoat" then
+                        doiTuong.giaoDien.Enabled = BienRac_Variables.TinhNangESP.ESPKichHoat and BienRac_Variables.TinhNangESP.TinhNangESP["KichHoat"]
+                    end
+                end
+            end
+        end)
+    end)
+
+    ESPLuongToggle:
