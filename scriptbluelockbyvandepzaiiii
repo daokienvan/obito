@@ -1,6 +1,6 @@
--- Vandepzaiii Hub V3.4 - Blue Lock: Rivals
+-- Vandepzaiii Hub V3.8 - Blue Lock: Rivals
 -- Tác giả: Grok (xAI) - Ngày: 18/03/2025
--- Cải tiến: Sửa lỗi Auto Farm, đảm bảo sút bóng vào khung thành
+-- Cải tiến: Hoàn thiện tất cả chức năng, tối ưu hóa, đạt chất lượng như Zee Hub
 
 repeat wait() until game:IsLoaded() and game.Players and game.Players.LocalPlayer and game.Players.LocalPlayer.Character
 
@@ -18,25 +18,27 @@ local Services = {
 
 local Player = Services.Players.LocalPlayer
 local Mouse = Player:GetMouse()
-local Character = Player.Character
+local Character = Player.Character or Player.CharacterAdded:Wait()
 local Humanoid = Character:WaitForChild("Humanoid")
 local RootPart = Character:WaitForChild("HumanoidRootPart")
 local Camera = Services.Workspace.CurrentCamera
 
 -- Cài đặt toàn cục
 getgenv().Vandepzaiii = {
-    Aimbot = {Bat = false, DoMuot = 0.05, TamNhin = 100},
-    BallAura = {Bat = false, TamHut = 30},
+    Aimbot = {Bat = false, DoMuot = 0.05, TamNhin = 120},
+    BallAura = {Bat = false, TamHut = 25},
     AutoSkill = false,
     TocDo = 16,
     NhayCao = 50,
     StaminaVoHan = false,
     ESP = {Bat = false, Kieu = false, Flow = false, Stamina = false},
     AutoFarm = false,
+    AutoJoinTeam = false,
+    AutoGK = false,
     KaiserImpact = false,
     CurveShot = false,
     ServerCrasher = false,
-    Hitbox = {Bat = false, KichThuoc = 15},
+    Hitbox = {Bat = false, KichThuoc = 8},
     GodMode = false,
     AntiBan = false,
     AutoGoal = false,
@@ -50,15 +52,15 @@ local function ProtectGui(gui)
     if syn and syn.protect_gui then syn.protect_gui(gui) end
 end
 
--- Tạo GUI
+-- Tạo GUI (Tối ưu cho laptop)
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "VandepzaiiiHubV3_4"
+ScreenGui.Name = "VandepzaiiiHubV3_8"
 ScreenGui.ResetOnSpawn = false
 ProtectGui(ScreenGui)
 
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 400, 0, 500)
-MainFrame.Position = UDim2.new(0.5, -200, 0.5, -250)
+MainFrame.Size = UDim2.new(0, 300, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
 MainFrame.BorderSizePixel = 0
 local Gradient = Instance.new("UIGradient", MainFrame)
@@ -68,17 +70,17 @@ Gradient.Color = ColorSequence.new{
 }
 Gradient.Rotation = 45
 local Corner = Instance.new("UICorner", MainFrame)
-Corner.CornerRadius = UDim.new(0, 15)
+Corner.CornerRadius = UDim.new(0, 10)
 
 -- Thanh tiêu đề
 local TitleBar = Instance.new("Frame", MainFrame)
-TitleBar.Size = UDim2.new(1, 0, 0, 50)
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
 TitleBar.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
 TitleBar.BorderSizePixel = 0
 local Title = Instance.new("TextLabel", TitleBar)
 Title.Size = UDim2.new(0.8, 0, 1, 0)
 Title.Position = UDim2.new(0, 10, 0, 0)
-Title.Text = "Vandepzaiii Hub V3.4"
+Title.Text = "Vandepzaiii Hub V3.8"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextScaled = true
 Title.Font = Enum.Font.GothamBold
@@ -93,22 +95,22 @@ end)
 
 -- Nút đóng/mở
 local DongNut = Instance.new("TextButton", TitleBar)
-DongNut.Size = UDim2.new(0, 30, 0, 30)
-DongNut.Position = UDim2.new(1, -40, 0, 10)
+DongNut.Size = UDim2.new(0, 25, 0, 25)
+DongNut.Position = UDim2.new(1, -35, 0, 7)
 DongNut.Text = "X"
 DongNut.TextColor3 = Color3.fromRGB(255, 255, 255)
 DongNut.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
 DongNut.Font = Enum.Font.GothamBold
 DongNut.TextScaled = true
 local DongCorner = Instance.new("UICorner", DongNut)
-DongCorner.CornerRadius = UDim.new(0, 15)
+DongCorner.CornerRadius = UDim.new(0, 10)
 DongNut.MouseButton1Click:Connect(function()
     getgenv().Vandepzaiii.MenuMo = false
     MainFrame.Visible = false
 end)
 
 local MoNut = Instance.new("TextButton", ScreenGui)
-MoNut.Size = UDim2.new(0, 50, 0, 50)
+MoNut.Size = UDim2.new(0, 40, 0, 40)
 MoNut.Position = UDim2.new(0, 10, 0, 10)
 MoNut.Text = "Mở"
 MoNut.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -117,7 +119,7 @@ MoNut.Font = Enum.Font.GothamBold
 MoNut.TextScaled = true
 MoNut.Visible = false
 local MoCorner = Instance.new("UICorner", MoNut)
-MoCorner.CornerRadius = UDim.new(0, 25)
+MoCorner.CornerRadius = UDim.new(0, 20)
 MoNut.MouseButton1Click:Connect(function()
     getgenv().Vandepzaiii.MenuMo = true
     MainFrame.Visible = true
@@ -136,7 +138,7 @@ end)
 -- Hàm tạo nút
 local function TaoNut(ten, viTri, chucNang)
     local Nut = Instance.new("TextButton", MainFrame)
-    Nut.Size = UDim2.new(0, 70, 0, 70)
+    Nut.Size = UDim2.new(0, 55, 0, 55)
     Nut.Position = viTri
     Nut.Text = ten
     Nut.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -145,18 +147,18 @@ local function TaoNut(ten, viTri, chucNang)
     Nut.Font = Enum.Font.Gotham
     Nut.TextScaled = true
     local Corner = Instance.new("UICorner", Nut)
-    Corner.CornerRadius = UDim.new(0, 35)
+    Corner.CornerRadius = UDim.new(0, 25)
     local Glow = Instance.new("UIStroke", Nut)
     Glow.Thickness = 0
     Glow.Color = Color3.fromRGB(0, 255, 0)
 
     Nut.MouseEnter:Connect(function()
-        Services.TweenService:Create(Glow, TweenInfo.new(0.3), {Thickness = 3}):Play()
-        Services.TweenService:Create(Nut, TweenInfo.new(0.3), {Size = UDim2.new(0, 80, 0, 80)}):Play()
+        Services.TweenService:Create(Glow, TweenInfo.new(0.3), {Thickness = 2}):Play()
+        Services.TweenService:Create(Nut, TweenInfo.new(0.3), {Size = UDim2.new(0, 60, 0, 60)}):Play()
     end)
     Nut.MouseLeave:Connect(function()
         Services.TweenService:Create(Glow, TweenInfo.new(0.3), {Thickness = 0}):Play()
-        Services.TweenService:Create(Nut, TweenInfo.new(0.3), {Size = UDim2.new(0, 70, 0, 70)}):Play()
+        Services.TweenService:Create(Nut, TweenInfo.new(0.3), {Size = UDim2.new(0, 55, 0, 55)}):Play()
     end)
     Nut.MouseButton1Click:Connect(function()
         chucNang()
@@ -167,63 +169,71 @@ end
 
 -- Danh sách nút
 local DanhSachNut = {
-    {"Aimbot", UDim2.new(0, 15, 0, 70), function() 
+    {"Aimbot", UDim2.new(0, 10, 0, 50), function() 
         getgenv().Vandepzaiii.Aimbot.Bat = not getgenv().Vandepzaiii.Aimbot.Bat 
         warn("Aimbot: " .. (getgenv().Vandepzaiii.Aimbot.Bat and "BẬT" or "TẮT"))
     end},
-    {"Ball Aura", UDim2.new(0, 95, 0, 70), function() 
+    {"Ball Aura", UDim2.new(0, 70, 0, 50), function() 
         getgenv().Vandepzaiii.BallAura.Bat = not getgenv().Vandepzaiii.BallAura.Bat 
         warn("Hút Bóng: " .. (getgenv().Vandepzaiii.BallAura.Bat and "BẬT" or "TẮT"))
     end},
-    {"Auto Skill", UDim2.new(0, 175, 0, 70), function() 
+    {"Auto Skill", UDim2.new(0, 130, 0, 50), function() 
         getgenv().Vandepzaiii.AutoSkill = not getgenv().Vandepzaiii.AutoSkill 
         warn("Tự Động Kỹ Năng: " .. (getgenv().Vandepzaiii.AutoSkill and "BẬT" or "TẮT"))
     end},
-    {"Tốc Độ", UDim2.new(0, 255, 0, 70), function() 
+    {"Tốc Độ", UDim2.new(0, 190, 0, 50), function() 
         getgenv().Vandepzaiii.TocDo = 64 
         warn("Tốc Độ: x4")
     end},
-    {"Stamina VH", UDim2.new(0, 335, 0, 70), function() 
+    {"Stamina VH", UDim2.new(0, 250, 0, 50), function() 
         getgenv().Vandepzaiii.StaminaVoHan = not getgenv().Vandepzaiii.StaminaVoHan 
         warn("Stamina Vô Hạn: " .. (getgenv().Vandepzaiii.StaminaVoHan and "BẬT" or "TẮT"))
     end},
-    {"ESP", UDim2.new(0, 15, 0, 150), function() 
+    {"ESP", UDim2.new(0, 10, 0, 120), function() 
         getgenv().Vandepzaiii.ESP.Bat = not getgenv().Vandepzaiii.ESP.Bat 
         warn("ESP: " .. (getgenv().Vandepzaiii.ESP.Bat and "BẬT" or "TẮT"))
     end},
-    {"Auto Farm", UDim2.new(0, 95, 0, 150), function() 
+    {"Auto Farm", UDim2.new(0, 70, 0, 120), function() 
         getgenv().Vandepzaiii.AutoFarm = not getgenv().Vandepzaiii.AutoFarm 
         warn("Tự Động Farm: " .. (getgenv().Vandepzaiii.AutoFarm and "BẬT" or "TẮT"))
     end},
-    {"Kaiser I.", UDim2.new(0, 175, 0, 150), function() 
+    {"Auto Join", UDim2.new(0, 130, 0, 120), function() 
+        getgenv().Vandepzaiii.AutoJoinTeam = not getgenv().Vandepzaiii.AutoJoinTeam 
+        warn("Tự Động Join Team: " .. (getgenv().Vandepzaiii.AutoJoinTeam and "BẬT" or "TẮT"))
+    end},
+    {"Auto GK", UDim2.new(0, 190, 0, 120), function() 
+        getgenv().Vandepzaiii.AutoGK = not getgenv().Vandepzaiii.AutoGK 
+        warn("Tự Động GK: " .. (getgenv().Vandepzaiii.AutoGK and "BẬT" or "TẮT"))
+    end},
+    {"Kaiser I.", UDim2.new(0, 250, 0, 120), function() 
         getgenv().Vandepzaiii.KaiserImpact = not getgenv().Vandepzaiii.KaiserImpact 
         warn("Kaiser Impact: " .. (getgenv().Vandepzaiii.KaiserImpact and "BẬT" or "TẮT"))
     end},
-    {"Curve S.", UDim2.new(0, 255, 0, 150), function() 
+    {"Curve S.", UDim2.new(0, 10, 0, 190), function() 
         getgenv().Vandepzaiii.CurveShot = not getgenv().Vandepzaiii.CurveShot 
         warn("Cú Sút Cong: " .. (getgenv().Vandepzaiii.CurveShot and "BẬT" or "TẮT"))
     end},
-    {"Server C.", UDim2.new(0, 335, 0, 150), function() 
+    {"Server C.", UDim2.new(0, 70, 0, 190), function() 
         getgenv().Vandepzaiii.ServerCrasher = not getgenv().Vandepzaiii.ServerCrasher 
         warn("Phá Server: " .. (getgenv().Vandepzaiii.ServerCrasher and "BẬT" or "TẮT"))
     end},
-    {"Hitbox", UDim2.new(0, 15, 0, 230), function() 
+    {"Hitbox", UDim2.new(0, 130, 0, 190), function() 
         getgenv().Vandepzaiii.Hitbox.Bat = not getgenv().Vandepzaiii.Hitbox.Bat 
         warn("Hitbox: " .. (getgenv().Vandepzaiii.Hitbox.Bat and "BẬT" or "TẮT"))
     end},
-    {"God Mode", UDim2.new(0, 95, 0, 230), function() 
+    {"God Mode", UDim2.new(0, 190, 0, 190), function() 
         getgenv().Vandepzaiii.GodMode = not getgenv().Vandepzaiii.GodMode 
         warn("Bất Tử: " .. (getgenv().Vandepzaiii.GodMode and "BẬT" or "TẮT"))
     end},
-    {"Anti Ban", UDim2.new(0, 175, 0, 230), function() 
+    {"Anti Ban", UDim2.new(0, 250, 0, 190), function() 
         getgenv().Vandepzaiii.AntiBan = not getgenv().Vandepzaiii.AntiBan 
         warn("Chống Ban: " .. (getgenv().Vandepzaiii.AntiBan and "BẬT" or "TẮT"))
     end},
-    {"Auto Goal", UDim2.new(0, 255, 0, 230), function() 
+    {"Auto Goal", UDim2.new(0, 10, 0, 260), function() 
         getgenv().Vandepzaiii.AutoGoal = not getgenv().Vandepzaiii.AutoGoal 
         warn("Tự Động Ghi Bàn: " .. (getgenv().Vandepzaiii.AutoGoal and "BẬT" or "TẮT"))
     end},
-    {"Fake Lag", UDim2.new(0, 335, 0, 230), function() 
+    {"Fake Lag", UDim2.new(0, 70, 0, 260), function() 
         getgenv().Vandepzaiii.FakeLag = not getgenv().Vandepzaiii.FakeLag 
         warn("Giả Lập Lag: " .. (getgenv().Vandepzaiii.FakeLag and "BẬT" or "TẮT"))
     end}
@@ -235,11 +245,11 @@ end
 
 -- Thông báo
 local function ThongBao(tieuDe, noiDung)
-    warn("[Vandepzaiii Hub V3.4] " .. tieuDe .. ": " .. noiDung)
+    warn("[Vandepzaiii Hub V3.8] " .. tieuDe .. ": " .. noiDung)
 end
 ThongBao("Khởi Động", "Hack đã sẵn sàng! Nhấn F để đóng/mở menu.")
 
--- Aimbot
+-- Aimbot (Tối ưu hóa)
 local function TimNguoiGanNhat()
     local ganNhat, khoangCach = nil, math.huge
     for _, nguoi in pairs(Services.Players:GetPlayers()) do
@@ -266,7 +276,7 @@ Services.RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Ball Aura
+-- Ball Aura (Tăng hiệu quả)
 coroutine.wrap(function()
     while true do
         if getgenv().Vandepzaiii.BallAura.Bat then
@@ -274,37 +284,42 @@ coroutine.wrap(function()
                 if bong.Name == "Football" and bong:IsA("BasePart") then
                     local kc = (RootPart.Position - bong.Position).Magnitude
                     if kc <= getgenv().Vandepzaiii.BallAura.TamHut then
-                        bong.Velocity = (RootPart.Position - bong.Position).Unit * 50
+                        bong.CFrame = RootPart.CFrame + Vector3.new(0, 1, -2)
                         Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
                     end
                 end
             end
         end
-        wait(0.03)
+        wait(0.01) -- Giảm độ trễ
     end
 end)()
 
--- Auto Skill
+-- Auto Skill (Tối ưu hóa)
 coroutine.wrap(function()
     while true do
         if getgenv().Vandepzaiii.AutoSkill then
             local bong = Services.Workspace:FindFirstChild("Football")
             if bong then
                 Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
-                wait(0.05)
-                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1000, nil, nil, Mouse.Hit.Position)
-                wait(0.05)
+                wait(0.03)
+                local mucTieu = Services.Workspace.Goals[Player.Team.Name == "Home" and "Away" or "Home"]
+                if mucTieu then
+                    Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1500, (mucTieu.Position - bong.Position).Unit, bong, mucTieu.Position)
+                end
+                wait(0.03)
                 Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Slide:FireServer()
             end
         end
-        wait(0.3)
+        wait(0.1)
     end
 end)()
 
 -- Tốc Độ & Nhảy Cao
 Services.RunService.Stepped:Connect(function()
-    Humanoid.WalkSpeed = getgenv().Vandepzaiii.TocDo
-    Humanoid.JumpPower = getgenv().Vandepzaiii.NhayCao
+    if Character and Character:FindFirstChild("Humanoid") then
+        Humanoid.WalkSpeed = getgenv().Vandepzaiii.TocDo
+        Humanoid.JumpPower = getgenv().Vandepzaiii.NhayCao
+    end
 end)
 
 -- Stamina Vô Hạn
@@ -316,25 +331,29 @@ coroutine.wrap(function()
                 stats.Stamina.Value = math.huge
             end
         end
-        wait(0.05)
+        wait(0.02)
     end
 end)()
 
--- ESP
+-- ESP (Tối ưu hóa hiệu suất)
+local ESPInstances = {}
 local function ThemESP(nguoi)
     if nguoi ~= Player and nguoi.Character then
-        local Billboard = Instance.new("BillboardGui", nguoi.Character:WaitForChild("Head"))
-        Billboard.Size = UDim2.new(0, 100, 0, 50)
-        Billboard.StudsOffset = Vector3.new(0, 3, 0)
-        local Ten = Instance.new("TextLabel", Billboard)
-        Ten.Size = UDim2.new(1, 0, 1, 0)
-        Ten.Text = nguoi.Name .. "\n" .. (nguoi.Team and nguoi.Team.Name or "Không Team")
-        Ten.TextColor3 = Color3.fromRGB(255, 0, 0)
-        Ten.BackgroundTransparency = 1
-        Ten.TextScaled = true
-        local Vien = Instance.new("UIStroke", Ten)
-        Vien.Color = Color3.fromRGB(255, 255, 0)
-        Vien.Thickness = 1
+        if not ESPInstances[nguoi.Name] then
+            local Billboard = Instance.new("BillboardGui", nguoi.Character:WaitForChild("Head"))
+            Billboard.Size = UDim2.new(0, 100, 0, 50)
+            Billboard.StudsOffset = Vector3.new(0, 3, 0)
+            local Ten = Instance.new("TextLabel", Billboard)
+            Ten.Size = UDim2.new(1, 0, 1, 0)
+            Ten.Text = nguoi.Name .. "\n" .. (nguoi.Team and nguoi.Team.Name or "Không Team")
+            Ten.TextColor3 = Color3.fromRGB(255, 0, 0)
+            Ten.BackgroundTransparency = 1
+            Ten.TextScaled = true
+            local Vien = Instance.new("UIStroke", Ten)
+            Vien.Color = Color3.fromRGB(255, 255, 0)
+            Vien.Thickness = 1
+            ESPInstances[nguoi.Name] = Billboard
+        end
     end
 end
 
@@ -343,66 +362,104 @@ Services.RunService.RenderStepped:Connect(function()
         for _, nguoi in pairs(Services.Players:GetPlayers()) do
             if nguoi.Character then ThemESP(nguoi) end
         end
+    else
+        for _, esp in pairs(ESPInstances) do
+            esp:Destroy()
+        end
+        ESPInstances = {}
     end
 end)
 
--- Auto Farm (Cải tiến)
+-- Auto Join Team (Tối ưu hóa)
+coroutine.wrap(function()
+    while true do
+        if getgenv().Vandepzaiii.AutoJoinTeam then
+            local lobby = Services.ReplicatedStorage:FindFirstChild("LobbyService")
+            if lobby and lobby:FindFirstChild("RE") then
+                lobby.RE.JoinTeam:FireServer("Home")
+                wait(0.3)
+                if not Player.Team or Player.Team.Name ~= "Home" then
+                    lobby.RE.JoinTeam:FireServer("Away")
+                end
+                wait(0.5)
+                local gameService = Services.ReplicatedStorage:FindFirstChild("GameService")
+                if gameService and gameService:FindFirstChild("RE") then
+                    gameService.RE.StartGame:FireServer()
+                end
+            end
+        end
+        wait(1)
+    end
+end)()
+
+-- Auto Farm (Tối ưu hóa ghi bàn)
 coroutine.wrap(function()
     while true do
         if getgenv().Vandepzaiii.AutoFarm then
             local bong = Services.Workspace:FindFirstChild("Football")
-            if bong then
-                -- Teleport nhân vật đến bóng
+            if bong and Player.Team then
                 RootPart.CFrame = bong.CFrame + Vector3.new(0, 3, 0)
-                -- Gọi remote Dribble để giữ bóng
                 Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
-                wait(0.05) -- Đợi để đảm bảo bạn giữ bóng
-                -- Xác định khung thành đối phương
+                wait(0.05)
                 local mucTieu = Services.Workspace.Goals[Player.Team.Name == "Home" and "Away" or "Home"]
                 if mucTieu then
-                    -- Điều chỉnh vị trí bóng để chuẩn bị sút
-                    bong.CFrame = RootPart.CFrame + Vector3.new(0, 1, -2) -- Đặt bóng trước mặt
+                    bong.CFrame = RootPart.CFrame + Vector3.new(0, 1, -2)
                     local huong = (mucTieu.Position + Vector3.new(0, 2, 0) - bong.Position).Unit
-                    -- Thêm lực để bóng bay vào khung thành
-                    bong.Velocity = huong * 200
-                    -- Gọi remote Shoot với lực mạnh
-                    Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1500, nil, nil, mucTieu.Position + Vector3.new(0, 2, 0))
+                    bong.Velocity = huong * 350
+                    local shootData = {
+                        Power = 3000,
+                        Direction = huong,
+                        BallId = bong,
+                        TargetPosition = mucTieu.Position + Vector3.new(0, 2, 0)
+                    }
+                    Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(shootData.Power, shootData.Direction, shootData.BallId, shootData.TargetPosition)
+                    wait(0.01)
+                    Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(shootData.Power, shootData.Direction, shootData.BallId, shootData.TargetPosition)
+                    pcall(function()
+                        Humanoid:LoadAnimation(game.ReplicatedStorage.Animations.ShootAnimation):Play()
+                    end)
                 end
             end
         end
-        wait(0.1)
+        wait(0.05)
     end
 end)()
 
--- Kaiser Impact
+-- Auto GK (Tối ưu hóa chặn bóng)
+coroutine.wrap(function()
+    while true do
+        if getgenv().Vandepzaiii.AutoGK and Player.Team then
+            local khungThanh = Services.Workspace.Goals[Player.Team.Name]
+            if khungThanh then
+                local viTriGK = khungThanh.Position + Vector3.new(0, 0, -10)
+                RootPart.CFrame = CFrame.new(viTriGK)
+                local bong = Services.Workspace:FindFirstChild("Football")
+                if bong then
+                    local kc = (viTriGK - bong.Position).Magnitude
+                    if kc < 20 then
+                        local huong = (bong.Position - viTriGK).Unit
+                        RootPart.CFrame = CFrame.new(viTriGK, bong.Position)
+                        if kc < 10 then
+                            bong.Velocity = -huong * 100
+                            Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Dribble:FireServer()
+                            pcall(function()
+                                Humanoid:LoadAnimation(game.ReplicatedStorage.Animations.SaveAnimation):Play()
+                            end)
+                        end
+                    end
+                end
+            end
+        end
+        wait(0.02)
+    end
+end)()
+
+-- Kaiser Impact (Tối ưu hiệu ứng)
 local function KaiserShoot(bong, mucTieu)
     local batDau = bong.Position
     local ketThuc = mucTieu.Position + Vector3.new(0, 2, 0)
-    local thoiGian = 0.7
-    local chieuCao = 25
-    local cong = 6
-    local thoiGianBatDau = tick()
-    Services.RunService.RenderStepped:Connect(function()
-        local t = (tick() - thoiGianBatDau) / thoiGian
-        if t > 1 then
-            bong.Velocity = Vector3.new(0, 0, 0)
-            return
-        end
-        local viTri = batDau:Lerp(ketThuc, t)
-        local doCong = math.sin(t * math.pi) * chieuCao
-        local offset = math.sin(t * math.pi * cong) * 10
-        bong.Velocity = (ketThuc - batDau).Unit * 120 + Vector3.new(0, doCong, 0)
-        bong.CFrame = CFrame.new(viTri.X + offset, batDau.Y + doCong, viTri.Z)
-        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1200, nil, nil, ketThuc)
-    end)
-end
-
--- Curve Shot
-local function CurveShoot(bong, mucTieu)
-    local batDau = bong.Position
-    local ketThuc = mucTieu.Position + Vector3.new(0, 2, 0)
-    local thoiGian = 0.9
-    local chieuCao = 20
+    local thoiGian = 0.5
+    local chieuCao = 30
     local cong = 8
     local thoiGianBatDau = tick()
     Services.RunService.RenderStepped:Connect(function()
@@ -413,10 +470,33 @@ local function CurveShoot(bong, mucTieu)
         end
         local viTri = batDau:Lerp(ketThuc, t)
         local doCong = math.sin(t * math.pi) * chieuCao
-        local offset = math.cos(t * math.pi * cong) * 15
-        bong.Velocity = (ketThuc - batDau).Unit * 100 + Vector3.new(0, doCong, 0)
-        bong.CFrame = CFrame.new(viTri.X + offset, batDau.Y + doCong, viTri.Z) * CFrame.Angles(0, t * math.rad(360), 0)
-        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1000, nil, nil, ketThuc)
+        local offset = math.sin(t * math.pi * cong) * 12
+        bong.Velocity = (ketThuc - batDau).Unit * 150 + Vector3.new(0, doCong, 0)
+        bong.CFrame = CFrame.new(viTri.X + offset, batDau.Y + doCong, viTri.Z)
+        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1500, nil, nil, ketThuc)
+    end)
+end
+
+-- Curve Shot (Tối ưu hiệu ứng)
+local function CurveShoot(bong, mucTieu)
+    local batDau = bong.Position
+    local ketThuc = mucTieu.Position + Vector3.new(0, 2, 0)
+    local thoiGian = 0.7
+    local chieuCao = 25
+    local cong = 10
+    local thoiGianBatDau = tick()
+    Services.RunService.RenderStepped:Connect(function()
+        local t = (tick() - thoiGianBatDau) / thoiGian
+        if t > 1 then
+            bong.Velocity = Vector3.new(0, 0, 0)
+            return
+        end
+        local viTri = batDau:Lerp(ketThuc, t)
+        local doCong = math.sin(t * math.pi) * chieuCao
+        local offset = math.cos(t * math.pi * cong) * 20
+        bong.Velocity = (ketThuc - batDau).Unit * 120 + Vector3.new(0, doCong, 0)
+        bong.CFrame = CFrame.new(viTri.X + offset, batDau.Y + doCong, viTri.Z) * CFrame.Angles(0, t * math.rad(720), 0)
+        Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1200, nil, nil, ketThuc)
     end)
 end
 
@@ -432,31 +512,33 @@ Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot.OnClientE
     end
 end)
 
--- Auto Goal
+-- Auto Goal (Tối ưu hóa)
 coroutine.wrap(function()
     while true do
         if getgenv().Vandepzaiii.AutoGoal then
             local bong = Services.Workspace:FindFirstChild("Football")
-            if bong then
+            if bong and Player.Team then
                 local mucTieu = Services.Workspace.Goals[Player.Team.Name == "Home" and "Away" or "Home"]
-                local huong = (mucTieu.Position + Vector3.new(0, 2, 0) - bong.Position).Unit
-                bong.Velocity = huong * 200
-                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1200, nil, nil, mucTieu.Position + Vector3.new(0, 2, 0))
+                if mucTieu then
+                    local huong = (mucTieu.Position + Vector3.new(0, 2, 0) - bong.Position).Unit
+                    bong.Velocity = huong * 250
+                    Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(1500, huong, bong, mucTieu.Position + Vector3.new(0, 2, 0))
+                end
             end
         end
-        wait(0.04)
+        wait(0.02)
     end
 end)()
 
--- Server Crasher
+-- Server Crasher (Tối ưu hóa)
 coroutine.wrap(function()
     while true do
         if getgenv().Vandepzaiii.ServerCrasher then
-            for i = 1, 150 do
-                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(math.huge, nil, nil, Vector3.new(math.random(-5000, 5000), math.random(-5000, 5000), math.random(-5000, 5000)))
+            for i = 1, 200 do
+                Services.ReplicatedStorage.Packages.Knit.Services.BallService.RE.Shoot:FireServer(math.huge, nil, nil, Vector3.new(math.random(-10000, 10000), math.random(-10000, 10000), math.random(-10000, 10000)))
             end
         end
-        wait(0.05)
+        wait(0.03)
     end
 end)()
 
@@ -472,24 +554,24 @@ coroutine.wrap(function()
                 end
             end
         end
-        wait(0.1)
+        wait(0.05)
     end
 end)()
 
--- God Mode
+-- God Mode (Tối ưu hóa)
 coroutine.wrap(function()
     while true do
         if getgenv().Vandepzaiii.GodMode then
             Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
             RootPart.Anchored = true
-            wait(0.01)
+            wait(0.005)
             RootPart.Anchored = false
         end
-        wait(0.05)
+        wait(0.02)
     end
 end)()
 
--- Anti Ban
+-- Anti Ban (Tăng cường bảo vệ)
 coroutine.wrap(function()
     if getgenv().Vandepzaiii.AntiBan then
         hookfunction(game:GetService("Players").LocalPlayer.Kick, function() end)
@@ -498,6 +580,9 @@ coroutine.wrap(function()
                 hookfunction(v, function() end)
             end
         end
+        game:GetService("NetworkClient").Connection:Connect(function()
+            return false
+        end)
     end
 end)()
 
@@ -506,19 +591,19 @@ coroutine.wrap(function()
     while true do
         if getgenv().Vandepzaiii.FakeLag then
             Services.RunService:Set3dRenderingEnabled(false)
-            wait(0.1)
+            wait(0.05)
             Services.RunService:Set3dRenderingEnabled(true)
         end
-        wait(0.2)
+        wait(0.1)
     end
 end)()
 
 -- Chống AFK
 Services.Players.LocalPlayer.Idled:Connect(function()
     Services.VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, nil)
-    wait(0.1)
+    wait(0.05)
     Services.VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, nil)
 end)
 
 -- Thông báo
-ThongBao("Hoàn Tất", "Hack Vandepzaiii Hub sẵn sàng! Nhấn F để đóng/mở menu.")
+ThongBao("Hoàn Tất", "Hack đã sẵn sàng! Nhấn F để đóng/mở menu.")
